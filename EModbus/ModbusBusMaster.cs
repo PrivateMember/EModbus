@@ -26,7 +26,7 @@ namespace EModbus
 		private volatile bool mPauseSignal = false;
 		private volatile bool mWriteExist = false;
 		private volatile bool mStoped = true;
-		private volatile UInt32 mPollTimeout = 5000;
+		private volatile UInt32 mPollTimeout = 2000;
 		private List<ModbusPoll> mPolls = new List<ModbusPoll>();
 		private MBCommInterface mComm = null;
 		private SerialPort mPort = null;
@@ -35,6 +35,13 @@ namespace EModbus
 		public List<ModbusPoll> Polls { get { return new List<ModbusPoll>(mPolls); } }
 
 		public string Description { set; get; }
+
+
+		public delegate void PollFinishedEventHandler(string data);
+
+		public event PollFinishedEventHandler OnPollFinished = null;
+
+
 
 		public ModbusBusMaster()
 		{
@@ -98,7 +105,7 @@ namespace EModbus
 			}
 			else
 			{
-				throw new Exception(Description + " is " + mStatus.ToString() + " !!");
+				
 			}
 		}
 
@@ -138,9 +145,6 @@ namespace EModbus
 						if (poll.Enabled)
 						{
 							ExecutePoll(poll);
-							//
-							// interpret the data if poll was successful
-							//
 						}
 
 						devIndex++;
@@ -198,9 +202,19 @@ namespace EModbus
 					response.AddRxData((byte)mPort.ReadByte());
 				}
 
+
 				if (response.Status == ModbusPollResponse.ResponseStatus.Finished || response.Status == ModbusPollResponse.ResponseStatus.ErrorCode)
 				{
 					mErrorCode = response.Error;
+
+					byte[] data = response.GetData();
+					string result = BitConverter.ToString(data);
+
+					if (mErrorCode == ErrorCode.None) { if (OnPollFinished != null) OnPollFinished(result); }
+					//
+					// interpret the data if poll was successful
+					//
+
 					break;
 				}
 
@@ -218,6 +232,8 @@ namespace EModbus
 
 				Thread.Sleep(20);
 			}
+
+			if (mErrorCode != ErrorCode.None) { if (OnPollFinished != null) OnPollFinished(mErrorCode.ToString()); }
 
 			to.Dispose();
 		}

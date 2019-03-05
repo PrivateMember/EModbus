@@ -22,6 +22,16 @@ namespace Read
 
 			RefreshPorts();
 			if (comboBox_ports.Items.Count > 0) comboBox_ports.SelectedIndex = 0;
+
+			mBusMaster.OnPollFinished += MBusMaster_OnPollFinished;
+		}
+
+		private void MBusMaster_OnPollFinished(string data)
+		{
+			richTextBox_messages.InvokeIfRequired(() =>
+			{
+				richTextBox_messages.Text += data + "\r\n";
+			});
 		}
 
 		private void button_addPoll_Click(object sender, EventArgs e)
@@ -101,6 +111,11 @@ namespace Read
 				treeView_polls.Nodes[i].Nodes.Add("Enabled : " + polls[i].Enabled.ToString());
 			}
 			treeView_polls.EndUpdate();
+		}
+
+		private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+		{
+			mBusMaster.Stop();
 		}
 	}
 }

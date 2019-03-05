@@ -114,6 +114,7 @@
 			this.Controls.Add(this.treeView_polls);
 			this.Name = "Form1";
 			this.Text = "s";
+			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
 			this.ResumeLayout(false);
 
 		}

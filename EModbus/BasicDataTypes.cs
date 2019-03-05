@@ -43,6 +43,7 @@ namespace EModbus
 		Stopped = -1,
 		None = 0,
 		Timeout = 1,
-		BusDataInvalid = 2
+		BusDataInvalid = 2,
+		CRCError
 	}
 }

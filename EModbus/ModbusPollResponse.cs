@@ -13,6 +13,7 @@ namespace EModbus
 			DeviceID,
 			FunctionCode,
 			ErrorCode,
+			DataLength,
 			Data,
 			CRC,
 			Finished
@@ -23,6 +24,7 @@ namespace EModbus
 		private byte mByteCount;
 		private byte mDevID;
 		private byte[] mRxBuff;
+		private int mRxIndex = 0;
 		private ErrorCode mErrCode = ErrorCode.BusDataInvalid;
 		private ResponseType mResType = ResponseType.Exception;
 		private ResponseStatus mStatus = ResponseStatus.DeviceID;
@@ -33,6 +35,18 @@ namespace EModbus
 		public ResponseType RespType { get { return mResType; } }
 		public ErrorCode Error { get { return mErrCode; } }
 		public ResponseStatus Status { get { return mStatus; } }
+
+		public byte[] GetData()
+		{
+			byte[] data = new byte[mByteCount];
+
+			for(int i = 0; i < mByteCount; i++)
+			{
+				data[i] = mRxBuff[3 + i];
+			}
+
+			return data;
+		}
 
 		public ModbusPollResponse(ModbusPoll poll)
 		{
@@ -47,7 +61,7 @@ namespace EModbus
 
 		public void Reset()
 		{
-
+			
 		}
 
 		public void AddRxData(byte[] data, int offset, int len)
@@ -65,20 +79,21 @@ namespace EModbus
 				case ResponseStatus.DeviceID:
 					if (data == mDevID)
 					{
-						mRxBuff[0] = data;
+						mRxBuff[mRxIndex++] = data;
 						mStatus = ResponseStatus.FunctionCode;
 					}
 					break;
 				case ResponseStatus.FunctionCode:
 					if (data == mFunCode)
 					{
-						mRxBuff[1] = data;
-						mStatus = ResponseStatus.Data;
+						mRxBuff[mRxIndex++] = data;
+						mStatus = ResponseStatus.DataLength;
 						mDataIndex = 0;
 					}
 					else if (data == mExpCode)
 					{
-						mRxBuff[1] = data;
+						mRxBuff[mRxIndex++] = data;
+						mByteCount = 0;
 						mStatus = ResponseStatus.ErrorCode;
 					}
 					else
@@ -87,17 +102,21 @@ namespace EModbus
 					}
 					break;
 				case ResponseStatus.ErrorCode:
-					mRxBuff[2] = data;
+					mRxBuff[mRxIndex++] = data;
 					mStatus = ResponseStatus.CRC;
 					mCRCIndex = 0;
 					break;
+				case ResponseStatus.DataLength:
+					mRxBuff[mRxIndex++] = data;
+					mStatus = ResponseStatus.Data;
+					mDataIndex = 0;
+					break;
 				case ResponseStatus.Data:
-					if(mDataIndex < mByteCount)
-					{
-						mRxBuff[3 + mDataIndex] = data;
-						mDataIndex++;
-					}
-					else
+					
+					mRxBuff[mRxIndex++] = data;
+					mDataIndex++;
+
+					if(mDataIndex == mByteCount)
 					{
 						mStatus = ResponseStatus.CRC;
 						mCRCIndex = 0;
@@ -105,13 +124,19 @@ namespace EModbus
 
 					break;
 				case ResponseStatus.CRC:
-					if(mCRCIndex < 2)
+					mRxBuff[mRxIndex++] = data;
+					mCRCIndex++;
+					if (mCRCIndex == 2)
 					{
-						mRxBuff[3 + mDataIndex + mCRCIndex] = data;
-						mCRCIndex++;
-					}
-					else
-					{
+						UInt16 crc = Utilities.Utils.CRC16(mRxBuff, (uint)(mRxIndex-2));
+						if(mRxBuff[mRxIndex - 2] == (byte)(crc&0xFF) && mRxBuff[mRxIndex - 1] == (byte)(crc >> 8))
+						{
+							mErrCode = ErrorCode.None;
+						}
+						else
+						{
+							mErrCode = ErrorCode.CRCError;
+						}
 						mStatus = ResponseStatus.Finished;
 					}
 					break;
