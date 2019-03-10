@@ -20,42 +20,143 @@ namespace Read
 		{
 			InitializeComponent();
 
+			System.Threading.Thread.CurrentThread.Name = "UI Thread";
 			RefreshPorts();
 			if (comboBox_ports.Items.Count > 0) comboBox_ports.SelectedIndex = 0;
 
 			mBusMaster.OnPollFinished += MBusMaster_OnPollFinished;
+			mBusMaster.OnStatusChanged += MBusMaster_OnStatusChanged;
+
+			button_pauseResume.Enabled = false;
+
+			
+		}
+
+		private delegate void UpdateControlsDelegate(MasterStatus status);
+
+		void UpdateControls(MasterStatus status)
+		{
+			if (this.InvokeRequired)
+			{
+				this.Invoke(new UpdateControlsDelegate(this.UpdateControls), status);
+			}
+			else
+			{
+				label_status.Text = status.ToString();
+
+				if (status == MasterStatus.Paused) button_pauseResume.Text = "Resume";
+				else if (status == MasterStatus.Running)
+				{
+					button_pauseResume.Text = "Pause";
+					button_startPoll.Text = "Stop";
+					button_pauseResume.Enabled = true;
+				}
+				else if (status == MasterStatus.Stopped)
+				{
+					button_startPoll.Text = "Start";
+					button_pauseResume.Text = "Resume";
+					button_pauseResume.Enabled = false;
+				}
+			}
+		}
+	
+
+		private void MBusMaster_OnStatusChanged(MasterStatus status)
+		{
+
+			UpdateControls(status);
+			//label_status.InvokeIfRequired(() =>
+			//{
+			//	label_status.Text = status.ToString();
+
+			//	if (status == MasterStatus.Paused) button_pauseResume.Text = "Resume";
+			//	else if (status == MasterStatus.Running)
+			//	{
+			//		button_pauseResume.Text = "Pause";
+			//		button_startPoll.Text = "Stop";
+			//		button_pauseResume.Enabled = true;
+			//	}
+			//	else if (status == MasterStatus.Stopped)
+			//	{
+			//		button_startPoll.Text = "Start";
+			//		button_pauseResume.Text = "Resume";
+			//		button_pauseResume.Enabled = false;
+			//	}
+			//});
 		}
 
 		private void MBusMaster_OnPollFinished(string data)
 		{
-			richTextBox_messages.InvokeIfRequired(() =>
+			richTextBox_data.InvokeIfRequired(() =>
 			{
-				richTextBox_messages.Text += data + "\r\n";
+				RichTechBoxAddData(richTextBox_data, data);
 			});
 		}
 
 		private void button_addPoll_Click(object sender, EventArgs e)
 		{
-
 			ModbusPoll poll = ModbusPoll.PollWizard();
 
 			if (poll != null)
 			{
-				mBusMaster.AddPoll(poll);
-				RefreshTreeView();
+				mBusMaster.AddPoll(poll, OnPollAdded);
 			}
+		}
+
+		private void OnPollAdded(bool state, string message)
+		{
+			this.InvokeIfRequired(() =>
+			{
+				RefreshTreeView();
+
+				RichTechBoxAddData(richTextBox_messages, message);
+			});
+		}
+
+		private void button_delPoll_Click(object sender, EventArgs e)
+		{
+			TreeNode node = treeView_polls.SelectedNode;
+			if (node != null)
+			{
+				if (node.Parent != null) node = node.Parent;
+
+				mBusMaster.RemovePoll((UInt32)node.Index, OnRemovePollHandler);
+			}
+		}
+
+		void OnRemovePollHandler(bool state, string message)
+		{
+			this.InvokeIfRequired(() =>
+			{
+				RefreshTreeView();
+				RichTechBoxAddData(richTextBox_messages, message);
+			});
 		}
 
 		private void button_startPoll_Click(object sender, EventArgs e)
 		{
-			mPort.PortName = comboBox_ports.SelectedItem as string;
-			mBusMaster.SetComm(mPort);
-			mBusMaster.Start();
+			if (mBusMaster.Status == MasterStatus.Stopped)
+			{
+				mPort.PortName = comboBox_ports.SelectedItem as string;
+				mBusMaster.SetComm(mPort);
+				mBusMaster.Start();
+			}
+			else
+			{
+				mBusMaster.Stop();
+			}
 		}
 
-		private void button_stopPoll_Click(object sender, EventArgs e)
+		private void button_pauseResume_Click(object sender, EventArgs e)
 		{
-			mBusMaster.Stop();
+			if (mBusMaster.Status == MasterStatus.Paused)
+			{
+				mBusMaster.Resume();
+			}
+			else
+			{
+				mBusMaster.Pause();
+			}
 		}
 
 		private void RefreshPorts()
@@ -63,24 +164,11 @@ namespace Read
 			MethodInvoker method = (MethodInvoker)delegate
 			{
 				comboBox_ports.Items.Clear();
-				string[] names = System.IO.Ports.SerialPort.GetPortNames();
+				string[] names = Utilities.Utils.QuerySerialPorts();
 
 				if (names.Length > 0)
 				{
-					foreach (string name in names)
-					{
-						System.IO.Ports.SerialPort port = new System.IO.Ports.SerialPort(name);
-						try
-						{
-							port.Open();
-							port.Close();
-							comboBox_ports.Items.Add(name);
-						}
-						catch (SystemException e)
-						{
-						}
-						port.Dispose();
-					}
+					comboBox_ports.Items.AddRange(names);
 				}
 			};
 			if (comboBox_ports.InvokeRequired == true)
@@ -115,7 +203,64 @@ namespace Read
 
 		private void Form1_FormClosing(object sender, FormClosingEventArgs e)
 		{
+			mBusMaster.OnPollFinished -= MBusMaster_OnPollFinished;
+			mBusMaster.OnStatusChanged -= MBusMaster_OnStatusChanged;
 			mBusMaster.Stop();
+		}
+
+		private void treeView_polls_DoubleClick(object sender, EventArgs e)
+		{
+			TreeNode node = treeView_polls.SelectedNode;
+
+			if (node == null) return;
+
+			if (node.Parent != null) node = node.Parent;
+
+			int index = node.Index;
+
+			ModbusPoll poll = mBusMaster.GetPoll((uint)index);
+
+
+			ModbusPollDefinitionForm form = new ModbusPollDefinitionForm();
+			form.SetPoll(poll);
+			if(form.ShowDialog() == DialogResult.OK)
+			{
+				poll = form.GetPoll();
+				mBusMaster.ReplacePoll((uint)index, poll, OnReplacePollHandler);
+			}
+		}
+
+		void OnReplacePollHandler(UInt32 index, ModbusPoll poll, bool state, string message)
+		{
+			this.InvokeIfRequired(() =>
+			{
+				RichTechBoxAddData(richTextBox_messages, message);
+
+				if (state)
+				{
+					treeView_polls.Nodes.RemoveAt((int)index);
+					treeView_polls.Nodes.Insert((int)index, poll.Name);
+					treeView_polls.Nodes[(int)index].Nodes.Add("ID : " + poll.DeviceID.ToString());
+					treeView_polls.Nodes[(int)index].Nodes.Add("Address : " + poll.DataAddress.ToString());
+					treeView_polls.Nodes[(int)index].Nodes.Add("Count : " + poll.DataCount.ToString());
+					treeView_polls.Nodes[(int)index].Nodes.Add("Type : " + poll.ObjType.ToString());
+					treeView_polls.Nodes[(int)index].Nodes.Add("Timeout : " + poll.TimeoutMilisec.ToString());
+					treeView_polls.Nodes[(int)index].Nodes.Add("Enabled : " + poll.Enabled.ToString());
+
+					treeView_polls.Nodes[(int)index].Expand();
+				}
+			});
+		}
+
+		void RichTechBoxAddData(RichTextBox rtb, String str)
+		{
+			rtb.InvokeIfRequired(() =>
+			{
+				rtb.Text += str + "\r\n";
+				rtb.SelectionStart = rtb.Text.Length;
+				rtb.SelectionLength = 0;
+				rtb.ScrollToCaret();
+			});
 		}
 	}
 }

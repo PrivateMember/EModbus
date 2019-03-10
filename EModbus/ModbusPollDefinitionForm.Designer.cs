@@ -102,11 +102,6 @@
             0,
             0,
             0});
-			this.numericUpDown_regAddr.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
 			this.numericUpDown_regAddr.Name = "numericUpDown_regAddr";
 			this.numericUpDown_regAddr.Size = new System.Drawing.Size(120, 20);
 			this.numericUpDown_regAddr.TabIndex = 2;

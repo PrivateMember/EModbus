@@ -40,13 +40,10 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
-    <Reference Include="Utilities, Version=3.1.0.0, Culture=neutral, PublicKeyToken=83380e73b2486719, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Utilities\bin\Debug\Utilities.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BasicDataTypes.cs" />
+    <Compile Include="EMasterActionBase.cs" />
     <Compile Include="Interfaces.cs" />
     <Compile Include="ModbusBusMaster.cs" />
     <Compile Include="ModbusCommand.cs" />
@@ -73,6 +70,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram1.cd" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Utilities\Utilities.csproj">
+      <Project>{0b1c5c5b-c0d4-4e01-b579-5672bdb8e380}</Project>
+      <Name>Utilities</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

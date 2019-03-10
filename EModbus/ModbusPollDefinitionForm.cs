@@ -16,7 +16,6 @@ namespace EModbus
 		{
 			InitializeComponent();
 
-
 			comboBox_types.DataSource = Enum.GetNames(typeof(ObjectType));
 		}
 
@@ -36,20 +35,31 @@ namespace EModbus
 		{
 			UInt32 rateTime = (UInt32)numericUpDown_rate.Value;
 
+			ObjectType type = ObjectType.HoldingRegister;
+			type = (ObjectType)Enum.Parse(type.GetType(), (string)comboBox_types.SelectedItem);
+
 			ModbusPoll poll = new ModbusPoll(
 				(byte)numericUpDown_MBID.Value,
 				(UInt16)numericUpDown_regAddr.Value,
 				(UInt16)numericUpDown_regCount.Value,
-				ObjectType.HoldingRegister);
-
-			ObjectType type = ObjectType.HoldingRegister;
-			type = (ObjectType)Enum.Parse(type.GetType(), (string)comboBox_types.SelectedItem);
+				type);
 
 			poll.Enabled = checkBox_devEnabled.Checked;
 			poll.Name = textBox_name.Text;
 			poll.TimeoutMilisec = (UInt32)numericUpDown_timeout.Value;
 
 			return poll;
+		}
+
+		public void SetPoll(ModbusPoll poll)
+		{
+			numericUpDown_MBID.Value = poll.DeviceID;
+			numericUpDown_regAddr.Value = poll.DataAddress;
+			numericUpDown_regCount.Value = poll.DataCount;
+			comboBox_types.SelectedIndex = Array.IndexOf(Enum.GetNames(typeof(ObjectType)), poll.ObjType.ToString());
+			checkBox_devEnabled.Checked = poll.Enabled;
+			textBox_name.Text = poll.Name;
+			numericUpDown_timeout.Value = poll.TimeoutMilisec;
 		}
 	}
 }

@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 
 namespace EModbus
 {
-	public class ModbusPoll
+	public class ModbusPoll : ICloneable
 	{
 		private byte mDevID;
 		private UInt16 mDataAddress;
 		private UInt16 mDataCount;
 		private volatile bool mBusy = false;
 		private ObjectType mObjType = ObjectType.HoldingRegister;
-
+		private Utilities.ProducerConsumer mCmdQueue = new Utilities.ProducerConsumer();
 		public byte DeviceID { get { return mDevID; } }
 		public UInt16 DataAddress { get { return mDataAddress; } }
 		public UInt16 DataCount { get { return mDataCount; } }
@@ -100,6 +100,16 @@ namespace EModbus
 				poll = form.GetPoll();
 			}
 
+			return poll;
+		}
+
+		public object Clone()
+		{
+			ModbusPoll poll = new ModbusPoll(mDevID, mDataAddress, mDataCount, mObjType);
+			poll.Name = Name;
+			poll.TimeoutMilisec = TimeoutMilisec;
+			poll.Enabled = Enabled;
+			poll.mBusy = mBusy;
 			return poll;
 		}
 	}
