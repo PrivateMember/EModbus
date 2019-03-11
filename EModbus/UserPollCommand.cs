@@ -15,13 +15,13 @@ namespace EModbus
 		GetPoll,
 	}
 
-	class EMasterActionBase
+	class UserPollCommand
 	{
 		private EMasterActionType mType = EMasterActionType.NoAction;
 
 		public EMasterActionType Type { get { return mType; } }
 
-		public EMasterActionBase(EMasterActionType type)
+		public UserPollCommand(EMasterActionType type)
 		{
 			mType = type;
 		}
@@ -29,7 +29,7 @@ namespace EModbus
 
 	public delegate void OnAddPollHandler(bool state, string message);
 
-	class EMasterActionAddPoll : EMasterActionBase
+	class UserPollCommandAdd : UserPollCommand
 	{
 		private ModbusPoll mPoll = null;
 		public OnAddPollHandler EventHandler = null;
@@ -39,7 +39,7 @@ namespace EModbus
 			set { mPoll = value.Clone() as ModbusPoll; }
 		}
 
-		public EMasterActionAddPoll(ModbusPoll poll, OnAddPollHandler handler) : base(EMasterActionType.AddPoll)
+		public UserPollCommandAdd(ModbusPoll poll, OnAddPollHandler handler) : base(EMasterActionType.AddPoll)
 		{
 			mPoll = poll.Clone() as ModbusPoll;
 			this.EventHandler = handler;
@@ -53,7 +53,7 @@ namespace EModbus
 
 	enum PollRemoveMode { ByObject, ByIndex }
 	public delegate void OnRemovePollHandler(bool state, string message);
-	class EMasterActionRemovePoll : EMasterActionBase
+	class UserPollCommandRemove : UserPollCommand
 	{
 		public event OnRemovePollHandler OnRemovePoll = null;
 		private ModbusPoll mPoll = null;
@@ -97,14 +97,14 @@ namespace EModbus
 			get { return mMode; }
 		}
 
-		public EMasterActionRemovePoll(ModbusPoll poll, bool removeAll, OnRemovePollHandler handelr) : base(EMasterActionType.RemovePoll)
+		public UserPollCommandRemove(ModbusPoll poll, bool removeAll, OnRemovePollHandler handelr) : base(EMasterActionType.RemovePoll)
 		{
 			Poll = poll;
 			RemoveAll = removeAll;
 			OnRemovePoll += handelr;
 		}
 
-		public EMasterActionRemovePoll(UInt32 index, OnRemovePollHandler handelr) : base(EMasterActionType.RemovePoll)
+		public UserPollCommandRemove(UInt32 index, OnRemovePollHandler handelr) : base(EMasterActionType.RemovePoll)
 		{
 			PollIndex = index;
 			RemoveAll = false;
@@ -119,14 +119,14 @@ namespace EModbus
 
 	public delegate void OnGetPollHandler(ModbusPoll poll);
 
-	class EMasterActionGetPoll : EMasterActionBase
+	class UserPollCommandGet : UserPollCommand
 	{
 		private UInt32 mIndex = 0;
 		public event OnGetPollHandler OnGetPoll = null;
 
 		public UInt32 PollIndex { get { return mIndex; } }
 
-		public EMasterActionGetPoll(UInt32 index, OnGetPollHandler handler) : base(EMasterActionType.GetPoll)
+		public UserPollCommandGet(UInt32 index, OnGetPollHandler handler) : base(EMasterActionType.GetPoll)
 		{
 			mIndex = index >= 0 ? index : 0;
 			OnGetPoll += handler;
@@ -140,7 +140,7 @@ namespace EModbus
 
 	public delegate void OnReplaceEventHandler(UInt32 index, ModbusPoll poll, bool state, string message);
 
-	class EMasterActionReplacePoll : EMasterActionBase
+	class UserPollCommandReplace : UserPollCommand
 	{
 		private ModbusPoll mOldPoll = null;
 		private ModbusPoll mNewPoll = null;
@@ -175,7 +175,7 @@ namespace EModbus
 			}
 		}
 
-		public EMasterActionReplacePoll(ModbusPoll oldPoll, ModbusPoll newPoll, OnReplaceEventHandler handler) : base(EMasterActionType.ReplacePoll)
+		public UserPollCommandReplace(ModbusPoll oldPoll, ModbusPoll newPoll, OnReplaceEventHandler handler) : base(EMasterActionType.ReplacePoll)
 		{
 			mNewPoll = newPoll.Clone() as ModbusPoll;
 			mOldPoll = oldPoll.Clone() as ModbusPoll;
@@ -183,7 +183,7 @@ namespace EModbus
 			this.OnReplacePoll += handler;
 		}
 
-		public EMasterActionReplacePoll(UInt32 index, ModbusPoll newPoll, OnReplaceEventHandler handler) : base(EMasterActionType.ReplacePoll)
+		public UserPollCommandReplace(UInt32 index, ModbusPoll newPoll, OnReplaceEventHandler handler) : base(EMasterActionType.ReplacePoll)
 		{
 			mNewPoll = newPoll.Clone() as ModbusPoll;
 			mOldPollIndex = index;

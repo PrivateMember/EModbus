@@ -8,7 +8,7 @@ namespace EModbus
 {
 	public class ModbusCommandReadDiscreteInputs : ModbusCommandRead
 	{
-		public ModbusCommandReadDiscreteInputs(UInt16 address, byte count) : base(ObjectType.DiscreteInput, address, count)
+		public ModbusCommandReadDiscreteInputs(UInt16 address, byte count) : base(ModbusObjectType.DiscreteInput, address, count)
 		{
 		}
 	}

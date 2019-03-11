@@ -8,7 +8,7 @@ namespace EModbus
 {
 	public class ModbusCommandReadHoldingRegisters : ModbusCommandRead
 	{
-		public ModbusCommandReadHoldingRegisters(UInt16 address, UInt16 count) : base(ObjectType.HoldingRegister, address, count)
+		public ModbusCommandReadHoldingRegisters(UInt16 address, UInt16 count) : base(ModbusObjectType.HoldingRegister, address, count)
 		{
 		}
 	}

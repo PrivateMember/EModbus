@@ -8,7 +8,7 @@ namespace EModbus
 {
 	public class ModbusCommandReadCoils : ModbusCommandRead
 	{
-		public ModbusCommandReadCoils(UInt16 address, byte count) : base(ObjectType.Coil, address, count)
+		public ModbusCommandReadCoils(UInt16 address, byte count) : base(ModbusObjectType.Coil, address, count)
 		{
 		}
 	}

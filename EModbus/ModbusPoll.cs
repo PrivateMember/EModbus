@@ -6,25 +6,30 @@ using System.Threading.Tasks;
 
 namespace EModbus
 {
+	[assembly: InternalsVisibleTo("OtherAssembly")]
 	public class ModbusPoll : ICloneable
 	{
+		
 		private byte mDevID;
 		private UInt16 mDataAddress;
 		private UInt16 mDataCount;
-		private volatile bool mBusy = false;
-		private ObjectType mObjType = ObjectType.HoldingRegister;
-		private Utilities.ProducerConsumer mCmdQueue = new Utilities.ProducerConsumer();
+		private ModbusObjectType mObjType = ModbusObjectType.HoldingRegister;
+
+		private byte[] mData = null;
+
+		private bool mDataValid = false;
+
+		public bool DataValid { get { return mDataValid; } }
+		public byte[] RawData { get { return mData; } }
 		public byte DeviceID { get { return mDevID; } }
 		public UInt16 DataAddress { get { return mDataAddress; } }
 		public UInt16 DataCount { get { return mDataCount; } }
 		public string Name { get; set; }
 		public bool Enabled { get; set; }
-		public bool IsBusy { get { return mBusy; } }
 		public UInt32 TimeoutMilisec { get; set; }
+		public ModbusObjectType ObjectType { get { return mObjType; } }
 
-		public ObjectType ObjType { get { return mObjType; } }
-
-		public ModbusPoll(byte devID, UInt16 address, UInt16 count, ObjectType oType)
+		public ModbusPoll(byte devID, UInt16 address, UInt16 count, ModbusObjectType oType)
 		{
 			mDevID = devID;
 			mDataAddress = address;
@@ -71,11 +76,11 @@ namespace EModbus
 		{
 			get
 			{
-				if (mObjType == ObjectType.HoldingRegister || mObjType == ObjectType.InputRegister)
+				if (mObjType == ModbusObjectType.HoldingRegister || mObjType == ModbusObjectType.InputRegister)
 				{
 					return (byte)(DataCount * 2);
 				}
-				else if (mObjType == ObjectType.Coil || mObjType == ObjectType.DiscreteInput)
+				else if (mObjType == ModbusObjectType.Coil || mObjType == ModbusObjectType.DiscreteInput)
 				{
 					if (mDataCount % 8 == 0) return (byte)(DataCount / 8);
 					else return (byte)(DataCount / 8 + 1);
@@ -109,7 +114,6 @@ namespace EModbus
 			poll.Name = Name;
 			poll.TimeoutMilisec = TimeoutMilisec;
 			poll.Enabled = Enabled;
-			poll.mBusy = mBusy;
 			return poll;
 		}
 	}

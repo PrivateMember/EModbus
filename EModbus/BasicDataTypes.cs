@@ -54,7 +54,7 @@ namespace EModbus
 		TCP
 	}
 
-	public enum ObjectType
+	public enum ModbusObjectType
 	{
 		Coil,           // Read-write	1 bit
 		DiscreteInput,  // Read-only	1 bit
@@ -122,7 +122,7 @@ namespace EModbus
 
 	public enum ResponseType
 	{
-		OK,
+		Data,
 		Exception
 	}
 }

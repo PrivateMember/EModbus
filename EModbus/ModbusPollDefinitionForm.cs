@@ -16,7 +16,7 @@ namespace EModbus
 		{
 			InitializeComponent();
 
-			comboBox_types.DataSource = Enum.GetNames(typeof(ObjectType));
+			comboBox_types.DataSource = Enum.GetNames(typeof(ModbusObjectType));
 		}
 
 		private void button_cancel_Click(object sender, EventArgs e)
@@ -35,8 +35,8 @@ namespace EModbus
 		{
 			UInt32 rateTime = (UInt32)numericUpDown_rate.Value;
 
-			ObjectType type = ObjectType.HoldingRegister;
-			type = (ObjectType)Enum.Parse(type.GetType(), (string)comboBox_types.SelectedItem);
+			ModbusObjectType type = ModbusObjectType.HoldingRegister;
+			type = (ModbusObjectType)Enum.Parse(type.GetType(), (string)comboBox_types.SelectedItem);
 
 			ModbusPoll poll = new ModbusPoll(
 				(byte)numericUpDown_MBID.Value,
@@ -56,7 +56,7 @@ namespace EModbus
 			numericUpDown_MBID.Value = poll.DeviceID;
 			numericUpDown_regAddr.Value = poll.DataAddress;
 			numericUpDown_regCount.Value = poll.DataCount;
-			comboBox_types.SelectedIndex = Array.IndexOf(Enum.GetNames(typeof(ObjectType)), poll.ObjType.ToString());
+			comboBox_types.SelectedIndex = Array.IndexOf(Enum.GetNames(typeof(ModbusObjectType)), poll.ObjectType.ToString());
 			checkBox_devEnabled.Checked = poll.Enabled;
 			textBox_name.Text = poll.Name;
 			numericUpDown_timeout.Value = poll.TimeoutMilisec;

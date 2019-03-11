@@ -21,6 +21,7 @@ namespace EModbus
 
 		private byte mFunCode;
 		private byte mExpCode;
+		private byte mExpErrCode;
 		private byte mByteCount;
 		private byte mDevID;
 		private byte[] mRxBuff;
@@ -35,6 +36,7 @@ namespace EModbus
 		public ResponseType RespType { get { return mResType; } }
 		public ErrorCode Error { get { return mErrCode; } }
 		public ResponseStatus Status { get { return mStatus; } }
+		public ExceptionCode ModbusException { get { return (ExceptionCode)mExpErrCode; } }
 
 		public byte[] GetData()
 		{
@@ -89,12 +91,14 @@ namespace EModbus
 						mRxBuff[mRxIndex++] = data;
 						mStatus = ResponseStatus.DataLength;
 						mDataIndex = 0;
+						mResType = ResponseType.Data;
 					}
 					else if (data == mExpCode)
 					{
 						mRxBuff[mRxIndex++] = data;
 						mByteCount = 0;
 						mStatus = ResponseStatus.ErrorCode;
+						mResType = ResponseType.Exception;
 					}
 					else
 					{
@@ -103,6 +107,7 @@ namespace EModbus
 					break;
 				case ResponseStatus.ErrorCode:
 					mRxBuff[mRxIndex++] = data;
+					mExpErrCode = data;
 					mStatus = ResponseStatus.CRC;
 					mCRCIndex = 0;
 					break;

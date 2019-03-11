@@ -13,7 +13,7 @@ namespace Read
 {
 	public partial class Form1 : Form
 	{
-		private ModbusBusMaster mBusMaster = new ModbusBusMaster();
+		private ModbusMaster mBusMaster = new ModbusMaster();
 		private System.IO.Ports.SerialPort mPort = new System.IO.Ports.SerialPort();
 
 		public Form1()
@@ -28,8 +28,6 @@ namespace Read
 			mBusMaster.OnStatusChanged += MBusMaster_OnStatusChanged;
 
 			button_pauseResume.Enabled = false;
-
-			
 		}
 
 		private delegate void UpdateControlsDelegate(MasterStatus status);
@@ -49,6 +47,7 @@ namespace Read
 				{
 					button_pauseResume.Text = "Pause";
 					button_startPoll.Text = "Stop";
+					comboBox_ports.Enabled = false;
 					button_pauseResume.Enabled = true;
 				}
 				else if (status == MasterStatus.Stopped)
@@ -56,6 +55,7 @@ namespace Read
 					button_startPoll.Text = "Start";
 					button_pauseResume.Text = "Resume";
 					button_pauseResume.Enabled = false;
+					comboBox_ports.Enabled = true;
 				}
 			}
 		}
@@ -194,7 +194,7 @@ namespace Read
 				treeView_polls.Nodes[i].Nodes.Add("ID : " + polls[i].DeviceID.ToString());
 				treeView_polls.Nodes[i].Nodes.Add("Address : " + polls[i].DataAddress.ToString());
 				treeView_polls.Nodes[i].Nodes.Add("Count : " + polls[i].DataCount.ToString());
-				treeView_polls.Nodes[i].Nodes.Add("Type : " + polls[i].ObjType.ToString());
+				treeView_polls.Nodes[i].Nodes.Add("Type : " + polls[i].ObjectType.ToString());
 				treeView_polls.Nodes[i].Nodes.Add("Timeout : " + polls[i].TimeoutMilisec.ToString());
 				treeView_polls.Nodes[i].Nodes.Add("Enabled : " + polls[i].Enabled.ToString());
 			}
@@ -243,7 +243,7 @@ namespace Read
 					treeView_polls.Nodes[(int)index].Nodes.Add("ID : " + poll.DeviceID.ToString());
 					treeView_polls.Nodes[(int)index].Nodes.Add("Address : " + poll.DataAddress.ToString());
 					treeView_polls.Nodes[(int)index].Nodes.Add("Count : " + poll.DataCount.ToString());
-					treeView_polls.Nodes[(int)index].Nodes.Add("Type : " + poll.ObjType.ToString());
+					treeView_polls.Nodes[(int)index].Nodes.Add("Type : " + poll.ObjectType.ToString());
 					treeView_polls.Nodes[(int)index].Nodes.Add("Timeout : " + poll.TimeoutMilisec.ToString());
 					treeView_polls.Nodes[(int)index].Nodes.Add("Enabled : " + poll.Enabled.ToString());
 
