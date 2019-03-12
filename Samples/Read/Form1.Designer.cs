@@ -37,11 +37,17 @@
 			this.label_status = new System.Windows.Forms.Label();
 			this.button_pauseResume = new System.Windows.Forms.Button();
 			this.richTextBox_messages = new System.Windows.Forms.RichTextBox();
+			this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+			this.pollToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.pollToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+			this.editMapsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.menuStrip1.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// treeView_polls
 			// 
-			this.treeView_polls.Location = new System.Drawing.Point(12, 46);
+			this.treeView_polls.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)));
+			this.treeView_polls.Location = new System.Drawing.Point(12, 74);
 			this.treeView_polls.Name = "treeView_polls";
 			this.treeView_polls.Size = new System.Drawing.Size(228, 433);
 			this.treeView_polls.TabIndex = 0;
@@ -49,7 +55,7 @@
 			// 
 			// button_addPoll
 			// 
-			this.button_addPoll.Location = new System.Drawing.Point(12, 12);
+			this.button_addPoll.Location = new System.Drawing.Point(12, 40);
 			this.button_addPoll.Name = "button_addPoll";
 			this.button_addPoll.Size = new System.Drawing.Size(92, 28);
 			this.button_addPoll.TabIndex = 1;
@@ -59,7 +65,7 @@
 			// 
 			// button_delPoll
 			// 
-			this.button_delPoll.Location = new System.Drawing.Point(148, 12);
+			this.button_delPoll.Location = new System.Drawing.Point(148, 40);
 			this.button_delPoll.Name = "button_delPoll";
 			this.button_delPoll.Size = new System.Drawing.Size(92, 28);
 			this.button_delPoll.TabIndex = 2;
@@ -69,7 +75,7 @@
 			// 
 			// button_startPoll
 			// 
-			this.button_startPoll.Location = new System.Drawing.Point(304, 67);
+			this.button_startPoll.Location = new System.Drawing.Point(304, 95);
 			this.button_startPoll.Name = "button_startPoll";
 			this.button_startPoll.Size = new System.Drawing.Size(92, 28);
 			this.button_startPoll.TabIndex = 3;
@@ -81,23 +87,24 @@
 			// 
 			this.comboBox_ports.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			this.comboBox_ports.FormattingEnabled = true;
-			this.comboBox_ports.Location = new System.Drawing.Point(304, 12);
+			this.comboBox_ports.Location = new System.Drawing.Point(304, 40);
 			this.comboBox_ports.Name = "comboBox_ports";
 			this.comboBox_ports.Size = new System.Drawing.Size(121, 21);
 			this.comboBox_ports.TabIndex = 5;
 			// 
 			// richTextBox_data
 			// 
-			this.richTextBox_data.Location = new System.Drawing.Point(267, 115);
+			this.richTextBox_data.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)));
+			this.richTextBox_data.Location = new System.Drawing.Point(267, 143);
 			this.richTextBox_data.Name = "richTextBox_data";
-			this.richTextBox_data.Size = new System.Drawing.Size(588, 220);
+			this.richTextBox_data.Size = new System.Drawing.Size(460, 364);
 			this.richTextBox_data.TabIndex = 6;
 			this.richTextBox_data.Text = "";
 			// 
 			// label_status
 			// 
 			this.label_status.AutoSize = true;
-			this.label_status.Location = new System.Drawing.Point(743, 79);
+			this.label_status.Location = new System.Drawing.Point(743, 107);
 			this.label_status.Name = "label_status";
 			this.label_status.Size = new System.Drawing.Size(35, 13);
 			this.label_status.TabIndex = 7;
@@ -105,7 +112,7 @@
 			// 
 			// button_pauseResume
 			// 
-			this.button_pauseResume.Location = new System.Drawing.Point(419, 67);
+			this.button_pauseResume.Location = new System.Drawing.Point(419, 95);
 			this.button_pauseResume.Name = "button_pauseResume";
 			this.button_pauseResume.Size = new System.Drawing.Size(92, 28);
 			this.button_pauseResume.TabIndex = 8;
@@ -115,17 +122,50 @@
 			// 
 			// richTextBox_messages
 			// 
-			this.richTextBox_messages.Location = new System.Drawing.Point(267, 341);
+			this.richTextBox_messages.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)));
+			this.richTextBox_messages.Location = new System.Drawing.Point(733, 143);
 			this.richTextBox_messages.Name = "richTextBox_messages";
-			this.richTextBox_messages.Size = new System.Drawing.Size(588, 138);
+			this.richTextBox_messages.Size = new System.Drawing.Size(190, 364);
 			this.richTextBox_messages.TabIndex = 9;
 			this.richTextBox_messages.Text = "";
+			// 
+			// menuStrip1
+			// 
+			this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.pollToolStripMenuItem,
+            this.pollToolStripMenuItem1});
+			this.menuStrip1.Location = new System.Drawing.Point(0, 0);
+			this.menuStrip1.Name = "menuStrip1";
+			this.menuStrip1.Size = new System.Drawing.Size(935, 24);
+			this.menuStrip1.TabIndex = 10;
+			this.menuStrip1.Text = "menuStrip1";
+			// 
+			// pollToolStripMenuItem
+			// 
+			this.pollToolStripMenuItem.Name = "pollToolStripMenuItem";
+			this.pollToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
+			this.pollToolStripMenuItem.Text = "File";
+			// 
+			// pollToolStripMenuItem1
+			// 
+			this.pollToolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.editMapsToolStripMenuItem});
+			this.pollToolStripMenuItem1.Name = "pollToolStripMenuItem1";
+			this.pollToolStripMenuItem1.Size = new System.Drawing.Size(39, 20);
+			this.pollToolStripMenuItem1.Text = "Poll";
+			// 
+			// editMapsToolStripMenuItem
+			// 
+			this.editMapsToolStripMenuItem.Name = "editMapsToolStripMenuItem";
+			this.editMapsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.editMapsToolStripMenuItem.Text = "Edit Maps";
+			this.editMapsToolStripMenuItem.Click += new System.EventHandler(this.editMapsToolStripMenuItem_Click);
 			// 
 			// Form1
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(935, 491);
+			this.ClientSize = new System.Drawing.Size(935, 522);
 			this.Controls.Add(this.richTextBox_messages);
 			this.Controls.Add(this.button_pauseResume);
 			this.Controls.Add(this.label_status);
@@ -135,9 +175,13 @@
 			this.Controls.Add(this.button_delPoll);
 			this.Controls.Add(this.button_addPoll);
 			this.Controls.Add(this.treeView_polls);
+			this.Controls.Add(this.menuStrip1);
+			this.MainMenuStrip = this.menuStrip1;
 			this.Name = "Form1";
 			this.Text = "s";
 			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
+			this.menuStrip1.ResumeLayout(false);
+			this.menuStrip1.PerformLayout();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -154,6 +198,10 @@
 		private System.Windows.Forms.Label label_status;
 		private System.Windows.Forms.Button button_pauseResume;
 		private System.Windows.Forms.RichTextBox richTextBox_messages;
+		private System.Windows.Forms.MenuStrip menuStrip1;
+		private System.Windows.Forms.ToolStripMenuItem pollToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem pollToolStripMenuItem1;
+		private System.Windows.Forms.ToolStripMenuItem editMapsToolStripMenuItem;
 	}
 }
 

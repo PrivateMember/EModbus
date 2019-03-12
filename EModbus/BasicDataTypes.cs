@@ -8,6 +8,7 @@ namespace EModbus
 {
 	public enum DataType
 	{
+		Bit,
 		Float,
 		Double,
 		Int64,
@@ -23,7 +24,8 @@ namespace EModbus
 		Custom32,
 		Custom64,
 		Custom128,
-		Custom256
+		Custom256,
+		CustomN
 	}
 
 	public enum RegisterOrder

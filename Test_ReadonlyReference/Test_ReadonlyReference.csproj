@@ -4,15 +4,17 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{81358E68-CE96-4CE9-9121-26FD1536F518}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <ProjectGuid>{CE2EA5A0-5C52-44AE-A987-92EFBD23024B}</ProjectGuid>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>EModbus</RootNamespace>
-    <AssemblyName>EModbus</AssemblyName>
+    <RootNamespace>Test_ReadonlyReference</RootNamespace>
+    <AssemblyName>Test_ReadonlyReference</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -22,6 +24,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -32,8 +35,6 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -42,49 +43,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BasicDataTypes.cs" />
-    <Compile Include="PollInterpreterMap.cs" />
-    <Compile Include="PollMapDefinitionForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="PollMapDefinitionForm.Designer.cs">
-      <DependentUpon>PollMapDefinitionForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UserPollCommand.cs" />
-    <Compile Include="Interfaces.cs" />
-    <Compile Include="ModbusMaster.cs" />
-    <Compile Include="ModbusCommand.cs" />
-    <Compile Include="ModbusCommandRead.cs" />
-    <Compile Include="ModbusCommandReadCoils.cs" />
-    <Compile Include="ModbusCommandReadDiscreteInputs.cs" />
-    <Compile Include="ModbusCommandReadHoldingRegisters.cs" />
-    <Compile Include="ModbusCommandReadInputRegisters.cs" />
-    <Compile Include="ModbusPollDefinitionForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ModbusPollDefinitionForm.Designer.cs">
-      <DependentUpon>ModbusPollDefinitionForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ModbusParameter.cs" />
-    <Compile Include="ModbusPollResponse.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="ModbusPollDefinitionForm.resx">
-      <DependentUpon>ModbusPollDefinitionForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="PollMapDefinitionForm.resx">
-      <DependentUpon>PollMapDefinitionForm.cs</DependentUpon>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="ClassDiagram1.cd" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\Utilities\Utilities.csproj">
-      <Project>{0b1c5c5b-c0d4-4e01-b579-5672bdb8e380}</Project>
-      <Name>Utilities</Name>
-    </ProjectReference>
+    <None Include="App.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

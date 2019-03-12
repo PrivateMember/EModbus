@@ -13,20 +13,22 @@ namespace EModbus
 	public class ModbusParameter
 	{
 		private byte[] mData;
-		private UInt32 mCount = 1;
-		private DataType mType = DataType.UInt16;
+
+		public string Name { get; set; } = "Unnamed";
+		public UInt32 DataCount { get; set; } = 1;
+		public UInt16 DataAddress { get; set; }
+		public DataType Type { get; set; } = DataType.UInt16;
 		
-		public UInt32 RegistersCount { get { return (mCount * GetTypeLengthInBytes(mType)) / 2; } }
-		public DataType Type { get { return mType; } }
-		public UInt32 Count { get { return mCount; } }
-		public UInt16 Address { get; set; }
-		public string Name { get; set; }
+		public UInt32 RegistersCount { get { return (DataCount * GetTypeLengthInBytes(Type)) / 2; } }
 
 		public static UInt32 GetTypeLengthInBytes(DataType tn)
 		{
 			UInt32 length = 0;
 			switch (tn)
 			{
+				case DataType.Bit:
+				//	length = mDataCount % 8 == 0 ? mDataCount / 8 : mDataCount / 8 + 1;
+					break;
 				case DataType.Double:
 				case DataType.UInt64:
 				case DataType.Int64:
@@ -45,13 +47,12 @@ namespace EModbus
 			return length;
 		}
 
-		public ModbusParameter(DataType type, UInt16 address, UInt32 count)
+		public ModbusParameter(DataType type, UInt16 address, UInt32 count = 1, UInt32 offset = 0)
 		{
-			this.mType = type;
-			Address = address;
-			this.mCount = count;
-			mData = new byte[RegistersCount * 2]; ;
-			Name = "";
+			Type = type;
+			DataCount = count;
+			DataAddress = address;
+			mData = new byte[RegistersCount * 2];
 		}
 	}
 }

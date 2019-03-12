@@ -12,11 +12,13 @@ namespace EModbus
 {
 	public partial class ModbusPollDefinitionForm : Form
 	{
+		private ModbusMaster.ModbusPoll mPoll = null;
 		public ModbusPollDefinitionForm()
 		{
 			InitializeComponent();
 
 			comboBox_types.DataSource = Enum.GetNames(typeof(ModbusObjectType));
+			comboBox_types.SelectedIndex = 3;
 		}
 
 		private void button_cancel_Click(object sender, EventArgs e)
@@ -31,14 +33,31 @@ namespace EModbus
 			Close();
 		}
 
-		public ModbusPoll GetPoll()
+		private void ResetPoll()
+		{
+			UInt32 rateTime = (UInt32)numericUpDown_rate.Value;
+			ModbusObjectType type = (ModbusObjectType)Enum.Parse(typeof(ModbusObjectType), (string)comboBox_types.SelectedItem);
+
+			mPoll = new ModbusMaster.ModbusPoll(
+				(byte)numericUpDown_MBID.Value,
+				(UInt16)numericUpDown_regAddr.Value,
+				(UInt16)numericUpDown_regCount.Value,
+				type);
+
+			mPoll.Enabled = checkBox_devEnabled.Checked;
+			mPoll.Name = textBox_name.Text;
+			mPoll.TimeoutMilisec = (UInt32)numericUpDown_timeout.Value;
+		}
+
+
+		public ModbusMaster.ModbusPoll GetPoll()
 		{
 			UInt32 rateTime = (UInt32)numericUpDown_rate.Value;
 
 			ModbusObjectType type = ModbusObjectType.HoldingRegister;
 			type = (ModbusObjectType)Enum.Parse(type.GetType(), (string)comboBox_types.SelectedItem);
 
-			ModbusPoll poll = new ModbusPoll(
+			ModbusMaster.ModbusPoll poll = new ModbusMaster.ModbusPoll(
 				(byte)numericUpDown_MBID.Value,
 				(UInt16)numericUpDown_regAddr.Value,
 				(UInt16)numericUpDown_regCount.Value,
@@ -51,15 +70,27 @@ namespace EModbus
 			return poll;
 		}
 
-		public void SetPoll(ModbusPoll poll)
+		public void SetPoll(ModbusMaster.ModbusPoll poll)
 		{
-			numericUpDown_MBID.Value = poll.DeviceID;
-			numericUpDown_regAddr.Value = poll.DataAddress;
-			numericUpDown_regCount.Value = poll.DataCount;
-			comboBox_types.SelectedIndex = Array.IndexOf(Enum.GetNames(typeof(ModbusObjectType)), poll.ObjectType.ToString());
-			checkBox_devEnabled.Checked = poll.Enabled;
-			textBox_name.Text = poll.Name;
-			numericUpDown_timeout.Value = poll.TimeoutMilisec;
+			mPoll = poll;
+
+			numericUpDown_MBID.Value = mPoll.DeviceID;
+			numericUpDown_regAddr.Value = mPoll.DataAddress;
+			numericUpDown_regCount.Value = mPoll.DataCount;
+			comboBox_types.SelectedIndex = Array.IndexOf(Enum.GetNames(typeof(ModbusObjectType)), mPoll.ObjectType.ToString());
+			checkBox_devEnabled.Checked = mPoll.Enabled;
+			textBox_name.Text = mPoll.Name;
+			numericUpDown_timeout.Value = mPoll.TimeoutMilisec;
+		}
+
+		private void button_maps_Click(object sender, EventArgs e)
+		{
+			PollMapDefinitionForm form = new PollMapDefinitionForm(mPoll);
+
+			if(form.ShowDialog() == DialogResult.OK)
+			{
+
+			}
 		}
 	}
 }

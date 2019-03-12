@@ -85,18 +85,35 @@ namespace Read
 			//});
 		}
 
-		private void MBusMaster_OnPollFinished(string data)
+		private void MBusMaster_OnPollFinished(string data, ModbusMaster.ModbusPoll poll)
 		{
 			richTextBox_data.InvokeIfRequired(() =>
 			{
 				RichTechBoxAddData(richTextBox_data, data);
+
+				if(poll.DataValid)
+				{
+					PollInterpreterMap map = poll.DataMaps[0];
+
+					string str = "";
+					for(int i = 0; i < map.mParams.Count; i++)
+					{
+						str += map.mParams[i].DataAddress + "\t";
+						str += map.mParams[i].Name + "\t";
+						str += map.mParams[i].Type + "\t";
+						str += map.ValueToString(poll.ResponseData, i);
+						str += "\r\n";
+					}
+
+					RichTechBoxAddData(richTextBox_data, str);
+				}
 			});
 		}
 
 		private void button_addPoll_Click(object sender, EventArgs e)
 		{
-			ModbusPoll poll = ModbusPoll.PollWizard();
-
+			ModbusMaster.ModbusPoll poll = ModbusMaster.ModbusPoll.PollWizard();
+			
 			if (poll != null)
 			{
 				mBusMaster.AddPoll(poll, OnPollAdded);
@@ -186,7 +203,7 @@ namespace Read
 			treeView_polls.BeginUpdate();
 			treeView_polls.Nodes.Clear();
 
-			List<ModbusPoll> polls = mBusMaster.Polls;
+			List<ModbusMaster.ModbusPoll> polls = mBusMaster.Polls;
 
 			for (int i = 0; i < polls.Count; i++)
 			{
@@ -218,7 +235,7 @@ namespace Read
 
 			int index = node.Index;
 
-			ModbusPoll poll = mBusMaster.GetPoll((uint)index);
+			ModbusMaster.ModbusPoll poll = mBusMaster.GetPoll((uint)index);
 
 
 			ModbusPollDefinitionForm form = new ModbusPollDefinitionForm();
@@ -230,7 +247,7 @@ namespace Read
 			}
 		}
 
-		void OnReplacePollHandler(UInt32 index, ModbusPoll poll, bool state, string message)
+		void OnReplacePollHandler(UInt32 index, ModbusMaster.ModbusPoll poll, bool state, string message)
 		{
 			this.InvokeIfRequired(() =>
 			{
@@ -261,6 +278,11 @@ namespace Read
 				rtb.SelectionLength = 0;
 				rtb.ScrollToCaret();
 			});
+		}
+
+		private void editMapsToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+
 		}
 	}
 }

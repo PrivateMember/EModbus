@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Utilities", "..\Utilities\U
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrivialArrayCopyTests", "TrivialArrayCopyTests\TrivialArrayCopyTests.csproj", "{704AF2D3-707A-4719-A6CF-8442FCCAA38D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test_ReadonlyReference", "Test_ReadonlyReference\Test_ReadonlyReference.csproj", "{CE2EA5A0-5C52-44AE-A987-92EFBD23024B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{704AF2D3-707A-4719-A6CF-8442FCCAA38D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{704AF2D3-707A-4719-A6CF-8442FCCAA38D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{704AF2D3-707A-4719-A6CF-8442FCCAA38D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CE2EA5A0-5C52-44AE-A987-92EFBD23024B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CE2EA5A0-5C52-44AE-A987-92EFBD23024B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CE2EA5A0-5C52-44AE-A987-92EFBD23024B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CE2EA5A0-5C52-44AE-A987-92EFBD23024B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

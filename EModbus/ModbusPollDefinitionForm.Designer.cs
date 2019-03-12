@@ -46,6 +46,7 @@
 			this.numericUpDown_timeout = new System.Windows.Forms.NumericUpDown();
 			this.label8 = new System.Windows.Forms.Label();
 			this.textBox_name = new System.Windows.Forms.TextBox();
+			this.button_maps = new System.Windows.Forms.Button();
 			((System.ComponentModel.ISupportInitialize)(this.numericUpDown_MBID)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.numericUpDown_regAddr)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.numericUpDown_regCount)).BeginInit();
@@ -90,9 +91,9 @@
 			this.label2.AutoSize = true;
 			this.label2.Location = new System.Drawing.Point(27, 84);
 			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(87, 13);
+			this.label2.Size = new System.Drawing.Size(71, 13);
 			this.label2.TabIndex = 3;
-			this.label2.Text = "Register Address";
+			this.label2.Text = "Data Address";
 			// 
 			// numericUpDown_regAddr
 			// 
@@ -106,20 +107,15 @@
 			this.numericUpDown_regAddr.Size = new System.Drawing.Size(120, 20);
 			this.numericUpDown_regAddr.TabIndex = 2;
 			this.numericUpDown_regAddr.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			this.numericUpDown_regAddr.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
 			// 
 			// label3
 			// 
 			this.label3.AutoSize = true;
 			this.label3.Location = new System.Drawing.Point(27, 119);
 			this.label3.Name = "label3";
-			this.label3.Size = new System.Drawing.Size(77, 13);
+			this.label3.Size = new System.Drawing.Size(61, 13);
 			this.label3.TabIndex = 5;
-			this.label3.Text = "Register Count";
+			this.label3.Text = "Data Count";
 			// 
 			// numericUpDown_regCount
 			// 
@@ -139,7 +135,7 @@
 			this.numericUpDown_regCount.TabIndex = 4;
 			this.numericUpDown_regCount.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
 			this.numericUpDown_regCount.Value = new decimal(new int[] {
-            1,
+            10,
             0,
             0,
             0});
@@ -166,6 +162,8 @@
 			// 
 			this.checkBox_devEnabled.AutoSize = true;
 			this.checkBox_devEnabled.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.checkBox_devEnabled.Checked = true;
+			this.checkBox_devEnabled.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.checkBox_devEnabled.Location = new System.Drawing.Point(116, 260);
 			this.checkBox_devEnabled.Name = "checkBox_devEnabled";
 			this.checkBox_devEnabled.Size = new System.Drawing.Size(15, 14);
@@ -291,11 +289,22 @@
 			this.textBox_name.Size = new System.Drawing.Size(217, 20);
 			this.textBox_name.TabIndex = 17;
 			// 
+			// button_maps
+			// 
+			this.button_maps.Location = new System.Drawing.Point(256, 291);
+			this.button_maps.Name = "button_maps";
+			this.button_maps.Size = new System.Drawing.Size(100, 34);
+			this.button_maps.TabIndex = 18;
+			this.button_maps.Text = "Edit Maps";
+			this.button_maps.UseVisualStyleBackColor = true;
+			this.button_maps.Click += new System.EventHandler(this.button_maps_Click);
+			// 
 			// ModbusPollDefinitionForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(379, 348);
+			this.Controls.Add(this.button_maps);
 			this.Controls.Add(this.textBox_name);
 			this.Controls.Add(this.label8);
 			this.Controls.Add(this.label7);
@@ -346,5 +355,6 @@
 		private System.Windows.Forms.NumericUpDown numericUpDown_timeout;
 		private System.Windows.Forms.Label label8;
 		private System.Windows.Forms.TextBox textBox_name;
+		private System.Windows.Forms.Button button_maps;
 	}
 }

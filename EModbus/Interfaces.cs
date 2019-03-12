@@ -24,6 +24,4 @@ namespace EModbus
 
 		ExceptionCode ReadFIFOQueue();
 	}
-
-	public interface ISetRawDataBu
 }

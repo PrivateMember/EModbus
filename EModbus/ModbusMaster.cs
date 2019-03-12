@@ -19,6 +19,127 @@ namespace EModbus
 
 	public class ModbusMaster
 	{
+		public class ModbusPoll : ICloneable
+		{
+			protected byte[] mRawData = null;
+			private bool mDataValid = false;
+			public List<PollInterpreterMap> DataMaps = new List<PollInterpreterMap>(); 
+
+			#region internal methdos
+			// thiese methods are only accessible from ModbusMaster Class which is inside this assembly
+			internal void SetResponseData(byte[] data) { mRawData = data; } // mRawData = data.Clone() as byte[]
+			internal void SetDataValidity(bool state) { mDataValid = state; }
+			#endregion internal methods
+
+			public RegisterOrder RegOrder { get; set; } = RegisterOrder.Inverse;
+			public ByteOrder ByteOrder { get; set; } = ByteOrder.MSBFirst;
+			public byte[] ResponseData { get { return mRawData.Clone() as byte[]; } }
+			public bool DataValid { get { return mDataValid; } }
+			public byte DeviceID { get; set; }
+			public UInt16 DataAddress { get; set; }
+			public UInt16 DataCount { get; set; }
+			public string Name { get; set; } = "";
+			public bool Enabled { get; set; } = false;
+			public UInt32 TimeoutMilisec { get; set; } = 1000;
+			public ModbusObjectType ObjectType { get; set; } = ModbusObjectType.HoldingRegister;
+			public UInt16 ResponseLength
+			{
+				get { return (UInt16)(ResponseDataLengthBytes + 5); }
+			}
+			public byte ResponseDataLengthBytes
+			{
+				get
+				{
+					if (ObjectType == ModbusObjectType.HoldingRegister || ObjectType == ModbusObjectType.InputRegister)
+					{
+						return (byte)(DataCount * 2);
+					}
+					else if (ObjectType == ModbusObjectType.Coil || ObjectType == ModbusObjectType.DiscreteInput)
+					{
+						if (DataCount % 8 == 0) return (byte)(DataCount / 8);
+						else return (byte)(DataCount / 8 + 1);
+					}
+					else
+					{
+						return 0;
+					}
+				}
+			}
+
+			public ModbusPoll(byte devID, UInt16 address, UInt16 count, ModbusObjectType oType)
+			{
+				DeviceID = devID;
+				DataAddress = address;
+				DataCount = count;
+				ObjectType = oType;
+
+				DataMaps.Add(new PollInterpreterMap(ResponseDataLengthBytes));
+			}
+
+			public ModbusPoll(ModbusPoll poll)
+			{
+				DeviceID = poll.DeviceID;
+				DataAddress = poll.DataAddress;
+				DataCount = poll.DataCount;
+				ObjectType = poll.ObjectType;
+				Name = poll.Name;
+				Enabled = poll.Enabled;
+				TimeoutMilisec = poll.TimeoutMilisec;
+				mDataValid = poll.mDataValid;
+				if (poll.mRawData != null)
+					mRawData = poll.mRawData.Clone() as byte[];
+
+				DataMaps = new List<PollInterpreterMap>(poll.DataMaps);
+			}
+
+			public bool IsClone(ModbusPoll poll)
+			{
+				if (poll == this) return true;
+
+				if (poll.DeviceID == this.DeviceID &&
+					poll.DataAddress == DataAddress &&
+					poll.DataCount == DataCount &&
+					poll.ObjectType == ObjectType)
+				{
+					return true;
+				}
+				
+				return false;
+			}
+
+			public byte[] GetPollCommand()
+			{
+				ModbusCommandRead cmd = new ModbusCommandRead(ObjectType, DataAddress, DataCount);
+				byte[] readCmd = cmd.ToBytes();
+				byte[] pollCmd = new byte[readCmd.Length + 3];
+				pollCmd[0] = DeviceID;
+				readCmd.CopyTo(pollCmd, 1);
+				UInt16 crc = Utilities.Utils.CRC16(pollCmd, (UInt32)pollCmd.Length - 2);
+				pollCmd[pollCmd.Length - 2] = (byte)(crc & 0xFF);
+				pollCmd[pollCmd.Length - 1] = (byte)(crc >> 8);
+				return pollCmd;
+			}
+
+			public static ModbusPoll PollWizard()
+			{
+				ModbusPoll poll = null;
+
+				ModbusPollDefinitionForm form = new ModbusPollDefinitionForm();
+
+				if (form.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+				{
+					poll = form.GetPoll();
+				}
+
+				return poll;
+			}
+
+			public object Clone()
+			{
+				return new ModbusPoll(this);
+			}
+		}
+
 		private ErrorCode mErrorCode = 0;
 		private volatile MasterStatus mStatus = MasterStatus.Stopped;
 		private volatile bool mStopSignal = false;
@@ -46,22 +167,15 @@ namespace EModbus
 				}
 			}
 		}
-
 		public MasterStatus Status { get { return mStatus; } }
-
 		public List<ModbusPoll> Polls { get { return new List<ModbusPoll>(mPolls); } }
-
 		public string Description { set; get; }
 
 
-		public delegate void PollFinishedEventHandler(string data);
-
+		public delegate void PollFinishedEventHandler(string data, ModbusPoll poll);
 		public delegate void StatusChangeHandler(MasterStatus status);
-
 		public event StatusChangeHandler OnStatusChanged = null;
 		public event PollFinishedEventHandler OnPollFinished = null;
-
-
 
 		public ModbusMaster()
 		{
@@ -173,8 +287,10 @@ namespace EModbus
 			byte[] cmd = poll.GetPollCommand();
 			TimeOut to = new TimeOut(poll.TimeoutMilisec);
 			ModbusPollResponse response = new ModbusPollResponse(poll);
-		//	mResType = ResponseType.OK;
 			mErrorCode = ErrorCode.None;
+
+			poll.SetDataValidity(false);
+			poll.SetResponseData(null);
 
 			mPort.Write(cmd, 0, cmd.Length);
 			to.Start();
@@ -204,23 +320,24 @@ namespace EModbus
 			}
 			else if (response.RespType == ResponseType.Data)
 			{
-				byte[] data = response.GetData();
-				result += BitConverter.ToString(data);
-				// interpret the data
+				poll.SetDataValidity(true);
+				poll.SetResponseData(response.GetData());
+				result += BitConverter.ToString(poll.ResponseData);
+				// interpret the data (or it is up to user ?!)
 			}
 			else
 			{
 				result += "Exception ( " + response.ModbusException.ToString() + " )";
 			}
 
-			OnPollFinished?.Invoke(result);
+			OnPollFinished?.Invoke(result, poll);
 		}
 
 		private void ExecuteActionAddPoll(UserPollCommandAdd actionAdd)
 		{
 			if (actionAdd.Poll == null)
 			{
-				actionAdd.FireEvent(false, "Adding Poll faild : null polll inserted");
+				actionAdd.FireEvent(false, "Adding Poll faild : null poll inserted");
 			}
 			else
 			{
@@ -440,6 +557,5 @@ namespace EModbus
 				mStopSignal = false;
 			}
 		}
-
 	}
 }

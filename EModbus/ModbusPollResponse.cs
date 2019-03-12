@@ -50,15 +50,15 @@ namespace EModbus
 			return data;
 		}
 
-		public ModbusPollResponse(ModbusPoll poll)
+		public ModbusPollResponse(ModbusMaster.ModbusPoll poll)
 		{
 			byte[] pollCmd = poll.GetPollCommand();
 
 			mDevID = pollCmd[0];
 			mFunCode = pollCmd[1];
 			mExpCode = (byte)(mFunCode & 0x80);
-			mByteCount = poll.PollResponseDataLength;
-			mRxBuff = new byte[poll.PollResponseLength];
+			mByteCount = poll.ResponseDataLengthBytes;
+			mRxBuff = new byte[poll.ResponseLength];
 		}
 
 		public void Reset()
