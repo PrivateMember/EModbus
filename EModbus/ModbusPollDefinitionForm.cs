@@ -17,6 +17,9 @@ namespace EModbus
 		{
 			InitializeComponent();
 
+			CancelButton = button_cancel;
+			AcceptButton = button_ok;
+
 			comboBox_types.DataSource = Enum.GetNames(typeof(ModbusObjectType));
 			comboBox_types.SelectedIndex = 3;
 		}

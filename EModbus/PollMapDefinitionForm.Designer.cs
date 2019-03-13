@@ -29,13 +29,14 @@
 		private void InitializeComponent()
 		{
 			this.listBox_mapsList = new System.Windows.Forms.ListBox();
-			this.button_new = new System.Windows.Forms.Button();
+			this.button_newMap = new System.Windows.Forms.Button();
 			this.textBox_mapName = new System.Windows.Forms.TextBox();
 			this.label1 = new System.Windows.Forms.Label();
 			this.button_ok = new System.Windows.Forms.Button();
-			this.dataGridView1 = new System.Windows.Forms.DataGridView();
+			this.dataGridView_modbusMap = new System.Windows.Forms.DataGridView();
 			this.button_cancel = new System.Windows.Forms.Button();
-			((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+			this.button_newParam = new System.Windows.Forms.Button();
+			((System.ComponentModel.ISupportInitialize)(this.dataGridView_modbusMap)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// listBox_mapsList
@@ -47,14 +48,14 @@
 			this.listBox_mapsList.TabIndex = 0;
 			this.listBox_mapsList.DoubleClick += new System.EventHandler(this.listBox_mapsList_DoubleClick);
 			// 
-			// button_new
+			// button_newMap
 			// 
-			this.button_new.Location = new System.Drawing.Point(21, 31);
-			this.button_new.Name = "button_new";
-			this.button_new.Size = new System.Drawing.Size(75, 23);
-			this.button_new.TabIndex = 1;
-			this.button_new.Text = "New";
-			this.button_new.UseVisualStyleBackColor = true;
+			this.button_newMap.Location = new System.Drawing.Point(21, 31);
+			this.button_newMap.Name = "button_newMap";
+			this.button_newMap.Size = new System.Drawing.Size(75, 23);
+			this.button_newMap.TabIndex = 1;
+			this.button_newMap.Text = "New";
+			this.button_newMap.UseVisualStyleBackColor = true;
 			// 
 			// textBox_mapName
 			// 
@@ -80,14 +81,15 @@
 			this.button_ok.TabIndex = 4;
 			this.button_ok.Text = "Ok";
 			this.button_ok.UseVisualStyleBackColor = true;
+			this.button_ok.Click += new System.EventHandler(this.button_ok_Click);
 			// 
-			// dataGridView1
+			// dataGridView_modbusMap
 			// 
-			this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-			this.dataGridView1.Location = new System.Drawing.Point(187, 72);
-			this.dataGridView1.Name = "dataGridView1";
-			this.dataGridView1.Size = new System.Drawing.Size(629, 355);
-			this.dataGridView1.TabIndex = 5;
+			this.dataGridView_modbusMap.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+			this.dataGridView_modbusMap.Location = new System.Drawing.Point(187, 72);
+			this.dataGridView_modbusMap.Name = "dataGridView_modbusMap";
+			this.dataGridView_modbusMap.Size = new System.Drawing.Size(629, 355);
+			this.dataGridView_modbusMap.TabIndex = 5;
 			// 
 			// button_cancel
 			// 
@@ -97,22 +99,34 @@
 			this.button_cancel.TabIndex = 6;
 			this.button_cancel.Text = "Cancel";
 			this.button_cancel.UseVisualStyleBackColor = true;
+			this.button_cancel.Click += new System.EventHandler(this.button_cancel_Click);
+			// 
+			// button_newParam
+			// 
+			this.button_newParam.Location = new System.Drawing.Point(532, 34);
+			this.button_newParam.Name = "button_newParam";
+			this.button_newParam.Size = new System.Drawing.Size(75, 23);
+			this.button_newParam.TabIndex = 7;
+			this.button_newParam.Text = "New";
+			this.button_newParam.UseVisualStyleBackColor = true;
+			this.button_newParam.Click += new System.EventHandler(this.button_newParam_Click);
 			// 
 			// PollMapDefinitionForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(838, 532);
+			this.Controls.Add(this.button_newParam);
 			this.Controls.Add(this.button_cancel);
-			this.Controls.Add(this.dataGridView1);
+			this.Controls.Add(this.dataGridView_modbusMap);
 			this.Controls.Add(this.button_ok);
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.textBox_mapName);
-			this.Controls.Add(this.button_new);
+			this.Controls.Add(this.button_newMap);
 			this.Controls.Add(this.listBox_mapsList);
 			this.Name = "PollMapDefinitionForm";
 			this.Text = "PollMapDefinitionForm";
-			((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.dataGridView_modbusMap)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -121,11 +135,12 @@
 		#endregion
 
 		private System.Windows.Forms.ListBox listBox_mapsList;
-		private System.Windows.Forms.Button button_new;
+		private System.Windows.Forms.Button button_newMap;
 		private System.Windows.Forms.TextBox textBox_mapName;
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.Button button_ok;
-		private System.Windows.Forms.DataGridView dataGridView1;
+		private System.Windows.Forms.DataGridView dataGridView_modbusMap;
 		private System.Windows.Forms.Button button_cancel;
+		private System.Windows.Forms.Button button_newParam;
 	}
 }

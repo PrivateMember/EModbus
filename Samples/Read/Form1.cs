@@ -94,13 +94,14 @@ namespace Read
 				if(poll.DataValid)
 				{
 					PollInterpreterMap map = poll.DataMaps[0];
-
+					ModbusPollParameter p;
 					string str = "";
-					for(int i = 0; i < map.mParams.Count; i++)
+					for (int i = 0; i < map.mParams.Count; i++)
 					{
-						str += map.mParams[i].DataAddress + "\t";
-						str += map.mParams[i].Name + "\t";
-						str += map.mParams[i].Type + "\t";
+						p = map.mParams[i];
+						str += "( " + p.ByteIndex + "," + p.ByteCount + " , " + p.BitIndex + " )\t";
+						str += p.Name + "\t";
+						str += p.Type + "\t";
 						str += map.ValueToString(poll.ResponseData, i);
 						str += "\r\n";
 					}

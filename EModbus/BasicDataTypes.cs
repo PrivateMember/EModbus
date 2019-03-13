@@ -8,7 +8,7 @@ namespace EModbus
 {
 	public enum DataType
 	{
-		Bit,
+		BOOLEAN,
 		Float,
 		Double,
 		Int64,

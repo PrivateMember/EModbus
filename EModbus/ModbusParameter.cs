@@ -10,49 +10,63 @@ namespace EModbus
 {
 //	[Serializable]
 //	[XmlRoot("Modbus Parameter")]
-	public class ModbusParameter
+	public class ModbusPollParameter
 	{
 		private byte[] mData;
 
 		public string Name { get; set; } = "Unnamed";
-		public UInt32 DataCount { get; set; } = 1;
-		public UInt16 DataAddress { get; set; }
+		public int ByteIndex { get; set; } = 0;
+		public int BitIndex { get; set; } = -1;
+		public UInt32 ByteCount { get; set; } = 2;
 		public DataType Type { get; set; } = DataType.UInt16;
-		
-		public UInt32 RegistersCount { get { return (DataCount * GetTypeLengthInBytes(Type)) / 2; } }
 
-		public static UInt32 GetTypeLengthInBytes(DataType tn)
+		//public static UInt32 GetTypeLengthInBytes(DataType tn)
+		//{
+		//	UInt32 length = 0;
+		//	switch (tn)
+		//	{
+		//		case DataType.BOOLEAN:
+		//			length = 1;
+		//			break;
+		//		case DataType.Double:
+		//		case DataType.UInt64:
+		//		case DataType.Int64:
+		//			length = 8; break;
+		//		case DataType.Float:
+		//		case DataType.UInt32:
+		//		case DataType.Int32:
+		//			length = 4; break;
+		//		case DataType.UInt16:
+		//		case DataType.Int16:
+		//			length = 2; break;
+		//		case DataType.UInt8:
+		//		case DataType.Int8:
+		//			length = 1; break;
+		//	}
+		//	return length;
+		//}
+
+		public ModbusPollParameter()
 		{
-			UInt32 length = 0;
-			switch (tn)
-			{
-				case DataType.Bit:
-				//	length = mDataCount % 8 == 0 ? mDataCount / 8 : mDataCount / 8 + 1;
-					break;
-				case DataType.Double:
-				case DataType.UInt64:
-				case DataType.Int64:
-					length = 8; break;
-				case DataType.Float:
-				case DataType.UInt32:
-				case DataType.Int32:
-					length = 4; break;
-				case DataType.UInt16:
-				case DataType.Int16:
-					length = 2; break;
-				case DataType.UInt8:
-				case DataType.Int8:
-					length = 1; break;
-			}
-			return length;
 		}
 
-		public ModbusParameter(DataType type, UInt16 address, UInt32 count = 1, UInt32 offset = 0)
+		public ModbusPollParameter(DataType type, int byteIndex, UInt32 byteCount = 1, int bitIndex=-1)
 		{
 			Type = type;
-			DataCount = count;
-			DataAddress = address;
-			mData = new byte[RegistersCount * 2];
+			ByteCount = byteCount;
+			ByteIndex = byteIndex;
+			BitIndex = bitIndex;
+			mData = new byte[ByteCount];
+		}
+
+		public ModbusPollParameter(ModbusPollParameter mp)
+		{
+			Name = mp.Name;
+			Type = mp.Type;
+			ByteCount = mp.ByteCount;
+			ByteIndex = mp.ByteIndex;
+			BitIndex = mp.BitIndex;
+			mData = new byte[ByteCount];
 		}
 	}
 }

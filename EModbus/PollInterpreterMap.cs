@@ -16,7 +16,7 @@ namespace EModbus
 	{
 		private uint mByteCount;
 		private byte[] mData;
-		public List<ModbusParameter> mParams = new List<ModbusParameter>();
+		public List<ModbusPollParameter> mParams = new List<ModbusPollParameter>();
 		private DisplayMode mDefaultDisplay = DisplayMode.Hex;
 
 		public string Name { set; get; } = "Unnamed Map";
@@ -27,7 +27,7 @@ namespace EModbus
 
 			for(int i = 0; i < mByteCount / 2; i++)
 			{
-				mParams.Add(new ModbusParameter(DataType.UInt16, 1));
+				mParams.Add(new ModbusPollParameter(DataType.UInt16, 1));
 			}
 		}
 
@@ -66,32 +66,31 @@ namespace EModbus
 		public string ValueToString(byte[] data, int paramIndex, DisplayMode display = DisplayMode.Decimal)
 		{
 			string result = "";
-			uint dataByteIndex = 0;
-
 			if (paramIndex < 0) return "";
 
-			for(int i = 0; i < paramIndex; i++)
+			ModbusPollParameter p = mParams[paramIndex];
+
+			byte[] myData = new byte[p.ByteCount];
+
+			for(int i = 0; i < p.ByteCount; i++)
 			{
-				dataByteIndex += mParams[i].RegistersCount * 2;
+				myData[i] = data[i + p.ByteIndex];
 			}
 
-			byte[] myData = new byte[mParams[paramIndex].RegistersCount * 2];
-
-			for(int i = 0; i < mParams[paramIndex].RegistersCount * 2; i++)
-			{
-				myData[i] = data[i + dataByteIndex];
-			}
-
-			DataReorder(myData, mParams[(int)paramIndex].Type);
+			DataReorder(myData, p.Type);
 			
 
 			//switch (mParams[(int)paramIndex].ByteOrder)
 			//{
 			//}
 
-			switch (mParams[(int)paramIndex].Type)
+			switch (p.Type)
 			{
-				case DataType.Bit: break;
+				case DataType.BOOLEAN:
+					byte value = (byte)(myData[0] & (0x01 << p.BitIndex));
+					if (value > 0) value = 1;
+					result = value.ToString();
+					break;
 				case DataType.Double:
 					result = BitConverter.ToDouble(myData, 0).ToString(); break;
 				case DataType.Float:
