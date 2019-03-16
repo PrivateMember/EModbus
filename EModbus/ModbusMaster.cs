@@ -26,7 +26,7 @@ namespace EModbus
 			public List<PollInterpreterMap> DataMaps = new List<PollInterpreterMap>(); 
 
 			#region internal methdos
-			// thiese methods are only accessible from ModbusMaster Class which is inside this assembly
+			// these methods are only accessible from ModbusMaster Class which is inside this assembly
 			internal void SetResponseData(byte[] data) { mRawData = data; } // mRawData = data.Clone() as byte[]
 			internal void SetDataValidity(bool state) { mDataValid = state; }
 			#endregion internal methods
@@ -73,7 +73,7 @@ namespace EModbus
 				DataCount = count;
 				ObjectType = oType;
 
-				DataMaps.Add(new PollInterpreterMap(ResponseDataLengthBytes));
+				DataMaps.Add(new PollInterpreterMap(ResponseDataLengthBytes)); // default map
 			}
 
 			public ModbusPoll(ModbusPoll poll)
@@ -89,7 +89,12 @@ namespace EModbus
 				if (poll.mRawData != null)
 					mRawData = poll.mRawData.Clone() as byte[];
 
-				DataMaps = new List<PollInterpreterMap>(poll.DataMaps);
+				DataMaps = new List<PollInterpreterMap>(poll.DataMaps.Count);
+
+				foreach(PollInterpreterMap map in poll.DataMaps)
+				{
+					DataMaps.Add((PollInterpreterMap)map.Clone());
+				}
 			}
 
 			public bool IsClone(ModbusPoll poll)

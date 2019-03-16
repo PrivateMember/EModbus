@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.ComponentModel;
 //using System.Xml.Serialization;
 //using System.Xml;
 
@@ -10,14 +11,23 @@ namespace EModbus
 {
 //	[Serializable]
 //	[XmlRoot("Modbus Parameter")]
-	public class ModbusPollParameter
+	public class ModbusPollParameter : ICloneable
 	{
 		private byte[] mData;
 
+		[Browsable(true)]
 		public string Name { get; set; } = "Unnamed";
+
+		[Browsable(true)]
 		public int ByteIndex { get; set; } = 0;
-		public int BitIndex { get; set; } = -1;
+
+		[Browsable(true)]
 		public UInt32 ByteCount { get; set; } = 2;
+
+		[Browsable(true)]
+		public int BitIndex { get; set; } = -1;
+
+		[Browsable(true)]
 		public DataType Type { get; set; } = DataType.UInt16;
 
 		//public static UInt32 GetTypeLengthInBytes(DataType tn)
@@ -66,7 +76,12 @@ namespace EModbus
 			ByteCount = mp.ByteCount;
 			ByteIndex = mp.ByteIndex;
 			BitIndex = mp.BitIndex;
-			mData = new byte[ByteCount];
+			mData = mp.mData == null ? null : mp.mData.Clone() as byte[];
+		}
+
+		public object Clone()
+		{
+			return new ModbusPollParameter(this);
 		}
 	}
 }

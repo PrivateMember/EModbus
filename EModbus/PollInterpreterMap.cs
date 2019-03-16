@@ -12,7 +12,7 @@ namespace EModbus
 		Hex
 	}
 
-	public class PollInterpreterMap
+	public class PollInterpreterMap : ICloneable
 	{
 		private uint mByteCount;
 		private byte[] mData;
@@ -25,9 +25,22 @@ namespace EModbus
 		{
 			mByteCount = bytesCount;
 
-			for(int i = 0; i < mByteCount / 2; i++)
+			for (int i = 0; i < mByteCount; i+=2)
 			{
-				mParams.Add(new ModbusPollParameter(DataType.UInt16, 1));
+				mParams.Add(new ModbusPollParameter(DataType.UInt16, i, 2));
+			}
+		}
+
+		public PollInterpreterMap(PollInterpreterMap map)
+		{
+			mByteCount = map.mByteCount;
+			mData = map.mData == null ? null : map.mData.Clone() as byte[];
+			mDefaultDisplay = map.mDefaultDisplay;
+			Name = map.Name;
+			mParams = new List<ModbusPollParameter>(map.mParams.Count);
+			foreach (ModbusPollParameter mpp in map.mParams)
+			{
+				mParams.Add(mpp.Clone() as ModbusPollParameter);
 			}
 		}
 
@@ -35,7 +48,7 @@ namespace EModbus
 		{
 			byte[] temp = new byte[2];
 			int regCount = 0;
-			switch(type)
+			switch (type)
 			{
 				case DataType.UInt64:
 				case DataType.Int64:
@@ -72,13 +85,13 @@ namespace EModbus
 
 			byte[] myData = new byte[p.ByteCount];
 
-			for(int i = 0; i < p.ByteCount; i++)
+			for (int i = 0; i < p.ByteCount; i++)
 			{
 				myData[i] = data[i + p.ByteIndex];
 			}
 
 			DataReorder(myData, p.Type);
-			
+
 
 			//switch (mParams[(int)paramIndex].ByteOrder)
 			//{
@@ -111,10 +124,28 @@ namespace EModbus
 					result = ((int)myData[0]).ToString(); break;
 				case DataType.UInt8:
 					result = myData[0].ToString(); break;
-				default:break;
+				default: break;
 			}
 
 
+			return result;
+		}
+
+		public object Clone()
+		{
+			return new PollInterpreterMap(this);
+		}
+
+		public override string ToString()
+		{
+			string result = "";
+			for(int i = 0; i < mParams.Count; i++)
+			{
+				result += mParams[i].Name + "(" + mParams[i].Type + ") : ";
+				result += ""; // value
+				result += "\r\n";
+			}
+			
 			return result;
 		}
 	}

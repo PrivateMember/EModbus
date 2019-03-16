@@ -13,35 +13,35 @@ namespace EModbus
 	public partial class PollMapDefinitionForm : Form
 	{
 		private ModbusMaster.ModbusPoll mPoll = null;
-		private List<PollInterpreterMap> mMaps = null;
-		private List<ModbusPollParameter> mListModbusParam = null;
 		private int mModbusSelectedRowIndex = 0;
 		private ComboBox mComboModbusDataType = null;
 	//	private ComboBox mComboModbusDataFormat = null;
 	//	private ComboBox mComboModbusDataAccess = null;
-
 		private BindingSource mBindingSourceModbus = null;
+		private BindingList<PollInterpreterMap> mBindingListMapNames = null;
+
+		/// <summary>
+		/// returns a cloned ModbusPoll object
+		/// </summary>
+		public ModbusMaster.ModbusPoll Poll { get { return mPoll.Clone() as ModbusMaster.ModbusPoll; } }
 
 		public PollMapDefinitionForm(ModbusMaster.ModbusPoll poll)
 		{
-			mPoll = poll;
+			mPoll = poll.Clone() as ModbusMaster.ModbusPoll;
 
 			InitializeComponent();
 
 			CancelButton = button_cancel;
 			AcceptButton = button_ok;
 
-			mListModbusParam = mPoll.DataMaps[0].mParams;
-
-
 			mBindingSourceModbus = new BindingSource();
 			mBindingSourceModbus.AllowNew = true;
 			mBindingSourceModbus.AddingNew += bindindSourceModbus_AddingNew;
-			mBindingSourceModbus.DataSource = mListModbusParam;
 			mBindingSourceModbus.CurrentItemChanged += bindingSourceModbus_CurrentItemChanged;
 			mBindingSourceModbus.CurrentChanged += bindingSourceModbus_CurrentChanged;
 			mBindingSourceModbus.DataError += bindingSource_DataError;
 			mBindingSourceModbus.ListChanged += bindingSourceModbus_ListChanged;
+			mBindingSourceModbus.DataSource = mPoll.DataMaps[0].mParams;
 
 			mComboModbusDataType = new ComboBox();
 			mComboModbusDataType.DropDownStyle = ComboBoxStyle.DropDownList;
@@ -62,34 +62,42 @@ namespace EModbus
 			//mComboModbusDataFormat.Hide();
 			//mComboModbusDataAccess.Hide();
 
-			//dataGridView1.Columns.Add("DataAddress", "Address");
-			//dataGridView1.Columns.Add("DataCount", "Count");
-			//dataGridView1.Columns.Add("DataType", "Type");
-			//dataGridView1.Columns.Add("DataName", "Name");
-
 			this.Controls.Add(mComboModbusDataType);
 
-			
 			dataGridView_modbusMap.KeyDown += DataGridView_modbusMap_KeyDown;
 			dataGridView_modbusMap.CellClick += DataGridView_modbusMap_CellClick;
-
-			dataGridView_modbusMap.DataSource = mBindingSourceModbus;
-			dataGridView_modbusMap.AllowUserToAddRows = true;
-			dataGridView_modbusMap.AllowUserToDeleteRows = true;
+			dataGridView_modbusMap.AllowUserToAddRows = false;
+			dataGridView_modbusMap.AllowUserToDeleteRows = false;
 			dataGridView_modbusMap.SelectionMode = DataGridViewSelectionMode.CellSelect;
 			dataGridView_modbusMap.CellValidated += DataGridView_modbusMap_CellValidated; ;
 			dataGridView_modbusMap.DataError += DataGridView_modbusMap_DataError; ;
 			dataGridView_modbusMap.Font = new Font(new FontFamily("Courier New"), 10, FontStyle.Regular);
+			dataGridView_modbusMap.DataSource = mBindingSourceModbus;
+
+			//foreach (PollInterpreterMap map in mPoll.DataMaps)
+			//{
+			//	listBox_mapsList.Items.Add(map.Name);
+			//}
+
+			textBox_mapName.TextChanged += TextBox_mapName_TextChanged;
 
 
-			mMaps = new List<PollInterpreterMap>(poll.DataMaps);
+			mBindingListMapNames = new BindingList<PollInterpreterMap>(mPoll.DataMaps);
+			listBox_mapsList.DataSource = mBindingListMapNames;
+			listBox_mapsList.DisplayMember = "Name";
+			listBox_mapsList.SelectedIndex = 0;
+		}
 
-			foreach (PollInterpreterMap map in mMaps)
-			{
-				listBox_mapsList.Items.Add(map.Name);
-			}
+		private void TextBox_mapName_TextChanged(object sender, EventArgs e)
+		{
+			ChangeCurrentMapName(textBox_mapName.Text);
+		}
 
-			LoadMap(0);
+		private void ChangeCurrentMapName(string str)
+		{
+			mBindingListMapNames[listBox_mapsList.SelectedIndex].Name = str;
+			listBox_mapsList.DisplayMember = ""; // to force the listbox to redraw items
+			listBox_mapsList.DisplayMember = "Name";
 		}
 
 		private void DataGridView_modbusMap_DataError(object sender, DataGridViewDataErrorEventArgs e)
@@ -127,8 +135,7 @@ namespace EModbus
 					int startIndex = bs.Position;
 
 					//	ModbusTableAutoAddress(list, startIndex);
-
-				//	dataGridView_modbusMap.DataSource = mBindingSourceModbus;
+					//	dataGridView_modbusMap.DataSource = mBindingSourceModbus;
 					dataGridView_modbusMap.Refresh();
 				}
 			}
@@ -158,7 +165,7 @@ namespace EModbus
 		{
 			mComboModbusDataType.Hide();
 
-			ModbusPollParameter modParam = new ModbusPollParameter(mListModbusParam[mModbusSelectedRowIndex]);
+			ModbusPollParameter modParam = new ModbusPollParameter(mPoll.DataMaps[0].mParams[mModbusSelectedRowIndex]);
 			modParam.Type = (DataType)mComboModbusDataType.SelectedItem;
 			mBindingSourceModbus[mModbusSelectedRowIndex] = modParam;
 
@@ -266,22 +273,6 @@ namespace EModbus
 			combo.DropDownWidth = maxWidth;
 		}
 
-		private void LoadMap(int index)
-		{
-			if (index < 0) return;
-
-			textBox_mapName.Text = mMaps[index].Name;
-
-			var bindingList = new BindingList<ModbusPollParameter>(mPoll.DataMaps[index].mParams);
-			var source = new BindingSource(bindingList, null);
-			dataGridView_modbusMap.DataSource = source;
-		}
-
-		private void listBox_mapsList_DoubleClick(object sender, EventArgs e)
-		{
-			LoadMap(listBox_mapsList.SelectedIndex);
-		}
-
 		private void button_ok_Click(object sender, EventArgs e)
 		{
 			DialogResult = DialogResult.OK;
@@ -297,6 +288,42 @@ namespace EModbus
 		private void button_newParam_Click(object sender, EventArgs e)
 		{
 			mBindingSourceModbus.AddNew();
+		}
+
+		private void button_newMap_Click(object sender, EventArgs e)
+		{
+			mBindingListMapNames.Add(new PollInterpreterMap(mPoll.ResponseDataLengthBytes));
+			listBox_mapsList.SelectedIndex = mBindingListMapNames.Count - 1;
+		}
+
+		private void listBox_mapsList_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			int index = listBox_mapsList.SelectedIndex;
+
+			mBindingSourceModbus.DataSource = mPoll.DataMaps[index].mParams;
+			textBox_mapName.Text = mBindingListMapNames[index].Name;
+		}
+
+		private void button_delParam_Click(object sender, EventArgs e)
+		{
+			if (mBindingSourceModbus.Count > 1)
+			{
+				mBindingSourceModbus.RemoveAt(dataGridView_modbusMap.CurrentCell.RowIndex);
+			}
+		}
+
+		private void button_clearParams_Click(object sender, EventArgs e)
+		{
+			mBindingSourceModbus.Clear();
+			mBindingSourceModbus.AddNew();
+		}
+
+		private void button_delMap_Click(object sender, EventArgs e)
+		{
+			if (mBindingListMapNames.Count > 1)
+			{
+				mBindingListMapNames.RemoveAt(listBox_mapsList.SelectedIndex);
+			}
 		}
 	}
 }

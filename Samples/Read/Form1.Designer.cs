@@ -75,7 +75,7 @@
 			// 
 			// button_startPoll
 			// 
-			this.button_startPoll.Location = new System.Drawing.Point(304, 95);
+			this.button_startPoll.Location = new System.Drawing.Point(492, 33);
 			this.button_startPoll.Name = "button_startPoll";
 			this.button_startPoll.Size = new System.Drawing.Size(92, 28);
 			this.button_startPoll.TabIndex = 3;
@@ -95,16 +95,16 @@
 			// richTextBox_data
 			// 
 			this.richTextBox_data.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)));
-			this.richTextBox_data.Location = new System.Drawing.Point(267, 143);
+			this.richTextBox_data.Location = new System.Drawing.Point(267, 74);
 			this.richTextBox_data.Name = "richTextBox_data";
-			this.richTextBox_data.Size = new System.Drawing.Size(460, 364);
+			this.richTextBox_data.Size = new System.Drawing.Size(460, 433);
 			this.richTextBox_data.TabIndex = 6;
 			this.richTextBox_data.Text = "";
 			// 
 			// label_status
 			// 
 			this.label_status.AutoSize = true;
-			this.label_status.Location = new System.Drawing.Point(743, 107);
+			this.label_status.Location = new System.Drawing.Point(797, 43);
 			this.label_status.Name = "label_status";
 			this.label_status.Size = new System.Drawing.Size(35, 13);
 			this.label_status.TabIndex = 7;
@@ -112,7 +112,7 @@
 			// 
 			// button_pauseResume
 			// 
-			this.button_pauseResume.Location = new System.Drawing.Point(419, 95);
+			this.button_pauseResume.Location = new System.Drawing.Point(605, 35);
 			this.button_pauseResume.Name = "button_pauseResume";
 			this.button_pauseResume.Size = new System.Drawing.Size(92, 28);
 			this.button_pauseResume.TabIndex = 8;
@@ -123,9 +123,9 @@
 			// richTextBox_messages
 			// 
 			this.richTextBox_messages.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)));
-			this.richTextBox_messages.Location = new System.Drawing.Point(733, 143);
+			this.richTextBox_messages.Location = new System.Drawing.Point(733, 74);
 			this.richTextBox_messages.Name = "richTextBox_messages";
-			this.richTextBox_messages.Size = new System.Drawing.Size(190, 364);
+			this.richTextBox_messages.Size = new System.Drawing.Size(190, 433);
 			this.richTextBox_messages.TabIndex = 9;
 			this.richTextBox_messages.Text = "";
 			// 
@@ -157,7 +157,7 @@
 			// editMapsToolStripMenuItem
 			// 
 			this.editMapsToolStripMenuItem.Name = "editMapsToolStripMenuItem";
-			this.editMapsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.editMapsToolStripMenuItem.Size = new System.Drawing.Size(126, 22);
 			this.editMapsToolStripMenuItem.Text = "Edit Maps";
 			this.editMapsToolStripMenuItem.Click += new System.EventHandler(this.editMapsToolStripMenuItem_Click);
 			// 

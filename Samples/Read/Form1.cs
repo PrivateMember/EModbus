@@ -89,24 +89,29 @@ namespace Read
 		{
 			richTextBox_data.InvokeIfRequired(() =>
 			{
-				RichTechBoxAddData(richTextBox_data, data);
-
 				if(poll.DataValid)
 				{
-					PollInterpreterMap map = poll.DataMaps[0];
 					ModbusPollParameter p;
 					string str = "";
-					for (int i = 0; i < map.mParams.Count; i++)
-					{
-						p = map.mParams[i];
-						str += "( " + p.ByteIndex + "," + p.ByteCount + " , " + p.BitIndex + " )\t";
-						str += p.Name + "\t";
-						str += p.Type + "\t";
-						str += map.ValueToString(poll.ResponseData, i);
-						str += "\r\n";
-					}
 
-					RichTechBoxAddData(richTextBox_data, str);
+					for (int m = 0; m < poll.DataMaps.Count; m++)
+					{
+						for (int i = 0; i < poll.DataMaps[m].mParams.Count; i++)
+						{
+							p = poll.DataMaps[m].mParams[i];
+							str += "( " + p.ByteIndex + "," + p.ByteCount + " , " + p.BitIndex + " )\t";
+							str += p.Name + "\t";
+							str += p.Type + "\t";
+							str += poll.DataMaps[m].ValueToString(poll.ResponseData, i);
+							str += "\r\n";
+						}
+
+						RichTechBoxAddData(richTextBox_data, str);
+					}
+				}
+				else
+				{
+					RichTechBoxAddData(richTextBox_data, data);
 				}
 			});
 		}
