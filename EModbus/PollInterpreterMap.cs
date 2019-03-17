@@ -15,17 +15,18 @@ namespace EModbus
 	public class PollInterpreterMap : ICloneable
 	{
 		private uint mByteCount;
-		private byte[] mData;
-		public List<ModbusPollParameter> mParams = new List<ModbusPollParameter>();
-		private DisplayMode mDefaultDisplay = DisplayMode.Hex;
+		private List<ModbusPollParameter> mParams = new List<ModbusPollParameter>();
 
+		public List<ModbusPollParameter> Parameters { get { return mParams; } }
+		public UInt32 ByteCount { get { return mByteCount; } set { mByteCount = value < 1 ? 1 : value; } }
 		public string Name { set; get; } = "Unnamed Map";
+		public DisplayMode DefaultDisplayMode { get; set; } = DisplayMode.Hex;
 
 		public PollInterpreterMap(uint bytesCount)
 		{
 			mByteCount = bytesCount;
 
-			for (int i = 0; i < mByteCount; i+=2)
+			for (int i = 0; i < mByteCount; i += 2)
 			{
 				mParams.Add(new ModbusPollParameter(DataType.UInt16, i, 2));
 			}
@@ -34,8 +35,7 @@ namespace EModbus
 		public PollInterpreterMap(PollInterpreterMap map)
 		{
 			mByteCount = map.mByteCount;
-			mData = map.mData == null ? null : map.mData.Clone() as byte[];
-			mDefaultDisplay = map.mDefaultDisplay;
+			DefaultDisplayMode = map.DefaultDisplayMode;
 			Name = map.Name;
 			mParams = new List<ModbusPollParameter>(map.mParams.Count);
 			foreach (ModbusPollParameter mpp in map.mParams)
@@ -44,43 +44,10 @@ namespace EModbus
 			}
 		}
 
-		private void DataReorder(byte[] data, DataType type, RegisterOrder rOrder = RegisterOrder.Inverse, ByteOrder bOrder = ByteOrder.MSBFirst)
+		public object GetParamValue(byte[] data, int paramIndex)
 		{
-			byte[] temp = new byte[2];
-			int regCount = 0;
-			switch (type)
-			{
-				case DataType.UInt64:
-				case DataType.Int64:
-				case DataType.Double:
-					regCount = 4; break;
-				case DataType.UInt32:
-				case DataType.Int32:
-				case DataType.Float:
-					regCount = 2; break;
-				case DataType.UInt16:
-				case DataType.Int16:
-					regCount = 1; break;
-			}
-
-			if (rOrder == RegisterOrder.Inverse && bOrder == ByteOrder.MSBFirst)
-			{
-				int byteCount = regCount * 2;
-				byte swap;
-				for (int i = 0; i < byteCount / 2; i++)
-				{
-					swap = data[i];
-					data[i] = data[byteCount - 1 - i];
-					data[byteCount - 1 - i] = swap;
-				}
-			}
-		}
-
-		public string ValueToString(byte[] data, int paramIndex, DisplayMode display = DisplayMode.Decimal)
-		{
-			string result = "";
-			if (paramIndex < 0) return "";
-
+			object obj = null;
+			if (paramIndex < 0) return null;
 			ModbusPollParameter p = mParams[paramIndex];
 
 			byte[] myData = new byte[p.ByteCount];
@@ -90,45 +57,123 @@ namespace EModbus
 				myData[i] = data[i + p.ByteIndex];
 			}
 
-			DataReorder(myData, p.Type);
+			byte bitByte = 0;
 
-
-			//switch (mParams[(int)paramIndex].ByteOrder)
-			//{
-			//}
-
-			switch (p.Type)
+			if (p.BitIndex >= 0) // coils and disceret inputs
 			{
-				case DataType.BOOLEAN:
-					byte value = (byte)(myData[0] & (0x01 << p.BitIndex));
-					if (value > 0) value = 1;
-					result = value.ToString();
-					break;
-				case DataType.Double:
-					result = BitConverter.ToDouble(myData, 0).ToString(); break;
-				case DataType.Float:
-					result = BitConverter.ToSingle(myData, 0).ToString(); break;
-				case DataType.Int64:
-					result = BitConverter.ToInt64(myData, 0).ToString(); break;
-				case DataType.UInt64:
-					result = BitConverter.ToUInt64(myData, 0).ToString(); break;
-				case DataType.Int32:
-					result = BitConverter.ToInt32(myData, 0).ToString(); break;
-				case DataType.UInt32:
-					result = BitConverter.ToUInt32(myData, 0).ToString(); break;
-				case DataType.Int16:
-					result = BitConverter.ToInt16(myData, 0).ToString(); break;
-				case DataType.UInt16:
-					result = BitConverter.ToUInt16(myData, 0).ToString(); break;
-				case DataType.Int8:
-					result = ((int)myData[0]).ToString(); break;
-				case DataType.UInt8:
-					result = myData[0].ToString(); break;
-				default: break;
+				bitByte = (byte)(myData[0] & (0x01 << p.BitIndex));
+				if (bitByte > 0) bitByte = 1;
+
+				switch (p.Type)
+				{
+					case DataType.BOOLEAN:
+						obj = (bitByte == 1 ? true : false); break;
+					case DataType.Door:
+						obj = (bitByte == 1 ? Door.Open : Door.Close).ToString(); break;
+					case DataType.OnOffSwitch:
+						obj = (bitByte == 1 ? OnOffSwitch.On : OnOffSwitch.Off).ToString(); break;
+					case DataType.DigitalIO:
+						obj = (bitByte == 1 ? DigitalIO.High : DigitalIO.Low).ToString(); break;
+					default: obj = null; break;
+				}
+			}
+			else
+			{
+				if (p.ByteCount == 1)
+				{
+					switch (p.Type)
+					{
+						case DataType.Int8:
+							obj = (char)myData[0]; break;
+						case DataType.UInt8:
+							obj = myData[0]; break;
+						case DataType.BOOLEAN:
+							obj = myData[0] > 0 ? true : false; break;
+						case DataType.DigitalIO:
+							obj = myData[0] > 0 ? DigitalIO.High : DigitalIO.Low; break;
+						case DataType.Door:
+							obj = myData[0] > 0 ? Door.Open : Door.Close; break;
+						case DataType.OnOffSwitch:
+							obj = myData[0] > 0 ? OnOffSwitch.On : OnOffSwitch.Off; break;
+						default: obj = null; break;
+					}
+				}
+				else if (p.ByteCount == 2)
+				{
+					UInt16 valueU16 = BitConverter.ToUInt16(myData, 0);
+					Int16 valueI16 = BitConverter.ToInt16(myData, 0);
+					switch (p.Type)
+					{
+						case DataType.Int16:
+							obj = valueU16;	break;
+						case DataType.UInt16:
+							obj = valueI16; break;
+						case DataType.BOOLEAN:
+							obj = valueU16 > 0 ? true : false; break;
+						case DataType.DigitalIO:
+							obj = valueU16 > 0 ? DigitalIO.High : DigitalIO.Low; break;
+						case DataType.Door:
+							obj = valueU16 > 0 ? Door.Open : Door.Close; break;
+						case DataType.OnOffSwitch:
+							obj = valueU16 > 0 ? OnOffSwitch.On : OnOffSwitch.Off; break;
+						default: obj = null; break;
+					}
+				}
+				else if (p.ByteCount == 4)
+				{
+					UInt32 valueU32 = BitConverter.ToUInt32(myData, 0);
+					Int32 valueI32 = BitConverter.ToInt32(myData, 0);
+					float valueF = BitConverter.ToSingle(myData, 0);
+					switch (p.Type)
+					{
+						case DataType.Int32:
+							obj = valueU32; break;
+						case DataType.UInt32:
+							obj = valueU32; break;
+						case DataType.Float:
+							obj = valueF; break;
+						case DataType.BOOLEAN:
+							obj = valueU32 > 0 ? true : false; break;
+						case DataType.DigitalIO:
+							obj = valueU32 > 0 ? DigitalIO.High : DigitalIO.Low; break;
+						case DataType.Door:
+							obj = valueU32 > 0 ? Door.Open : Door.Close; break;
+						case DataType.OnOffSwitch:
+							obj = valueU32 > 0 ? OnOffSwitch.On : OnOffSwitch.Off; break;
+						default: obj = null; break;
+					}
+				}
+				else if (p.ByteCount == 8)
+				{
+					UInt64 valueU64 = BitConverter.ToUInt64(myData, 0);
+					Int64 valueI64 = BitConverter.ToInt64(myData, 0);
+					double valueF = BitConverter.ToDouble(myData, 0);
+					switch (p.Type)
+					{
+						case DataType.Int64:
+							obj = valueU64; break;
+						case DataType.UInt64:
+							obj = valueU64; break;
+						case DataType.Double:
+							obj = valueF; break;
+						case DataType.BOOLEAN:
+							obj = valueU64 > 0 ? true : false; break;
+						case DataType.DigitalIO:
+							obj = valueU64 > 0 ? DigitalIO.High : DigitalIO.Low; break;
+						case DataType.Door:
+							obj = valueU64 > 0 ? Door.Open : Door.Close; break;
+						case DataType.OnOffSwitch:
+							obj = valueU64 > 0 ? OnOffSwitch.On : OnOffSwitch.Off; break;
+						default: obj = null; break;
+					}
+				}
+				else
+				{
+
+				}
 			}
 
-
-			return result;
+			return obj;
 		}
 
 		public object Clone()

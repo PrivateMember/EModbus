@@ -23,6 +23,11 @@ namespace EModbus
 			comboBox_types.DataSource = Enum.GetNames(typeof(ModbusObjectType));
 			comboBox_types.SelectedIndex = 3;
 
+			comboBox_byteOrder.DataSource = Enum.GetNames(typeof(ByteOrder));
+			comboBox_byteOrder.SelectedIndex = 1;
+			comboBox_regOrder.DataSource = Enum.GetNames(typeof(RegisterOrder));
+			comboBox_regOrder.SelectedIndex = 0;
+
 			CreateDefaultPoll();
 		}
 
@@ -36,6 +41,9 @@ namespace EModbus
 				(ushort)numericUpDown_regAddr.Value,
 				(ushort)numericUpDown_regCount.Value,
 				type);
+
+			mPoll.ByteOrder = ByteOrder.MSBFirst;
+			mPoll.RegOrder = RegisterOrder.LSRFirst;
 		}
 
 		private void button_cancel_Click(object sender, EventArgs e)
@@ -51,10 +59,10 @@ namespace EModbus
 		}
 
 		public ModbusMaster.ModbusPoll GetPoll()
-		{ 
-			ModbusObjectType type = ModbusObjectType.HoldingRegister;
-			
-			mPoll.ObjectType = (ModbusObjectType)Enum.Parse(type.GetType(), (string)comboBox_types.SelectedItem);
+		{
+			mPoll.ObjectType = (ModbusObjectType)Enum.Parse(typeof(ModbusObjectType), (string)comboBox_types.SelectedItem);
+			mPoll.ByteOrder = (ByteOrder)Enum.Parse(typeof(ByteOrder), (string)comboBox_byteOrder.SelectedItem);
+			mPoll.RegOrder = (RegisterOrder)Enum.Parse(typeof(RegisterOrder), (string)comboBox_regOrder.SelectedItem);
 			mPoll.DeviceID = (byte)numericUpDown_MBID.Value;
 			mPoll.DataAddress = (UInt16)numericUpDown_regAddr.Value;
 			mPoll.DataCount = (UInt16)numericUpDown_regCount.Value;
@@ -73,6 +81,8 @@ namespace EModbus
 			numericUpDown_regAddr.Value = mPoll.DataAddress;
 			numericUpDown_regCount.Value = mPoll.DataCount;
 			comboBox_types.SelectedIndex = Array.IndexOf(Enum.GetNames(typeof(ModbusObjectType)), mPoll.ObjectType.ToString());
+			comboBox_byteOrder.SelectedIndex = Array.IndexOf(Enum.GetNames(typeof(ByteOrder)), mPoll.ByteOrder.ToString());
+			comboBox_regOrder.SelectedIndex = Array.IndexOf(Enum.GetNames(typeof(RegisterOrder)), mPoll.RegOrder.ToString());
 			checkBox_devEnabled.Checked = mPoll.Enabled;
 			textBox_name.Text = mPoll.Name;
 			numericUpDown_timeout.Value = mPoll.TimeoutMilisec;

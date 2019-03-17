@@ -20,18 +20,15 @@ namespace EModbus
 		UInt16,
 		UInt8,
 		String,
-		Custom16,
-		Custom32,
-		Custom64,
-		Custom128,
-		Custom256,
-		CustomN
+		OnOffSwitch,
+		Door,
+		DigitalIO
 	}
 
 	public enum RegisterOrder
 	{
-		Normal,
-		Inverse
+		LSRFirst,
+		MSRFirst
 	}
 
 	public enum ByteOrder
@@ -126,5 +123,23 @@ namespace EModbus
 	{
 		Data,
 		Exception
+	}
+
+	public enum Door
+	{
+		Open = 1,
+		Close = 0
+	}
+
+	public enum OnOffSwitch
+	{
+		On = 1,
+		Off = 0
+	}
+
+	public enum DigitalIO
+	{
+		High = 1,
+		Low = 0
 	}
 }

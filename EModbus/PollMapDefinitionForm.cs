@@ -41,7 +41,7 @@ namespace EModbus
 			mBindingSourceModbus.CurrentChanged += bindingSourceModbus_CurrentChanged;
 			mBindingSourceModbus.DataError += bindingSource_DataError;
 			mBindingSourceModbus.ListChanged += bindingSourceModbus_ListChanged;
-			mBindingSourceModbus.DataSource = mPoll.DataMaps[0].mParams;
+			mBindingSourceModbus.DataSource = mPoll.DataMaps[0].Parameters;
 
 			mComboModbusDataType = new ComboBox();
 			mComboModbusDataType.DropDownStyle = ComboBoxStyle.DropDownList;
@@ -165,7 +165,7 @@ namespace EModbus
 		{
 			mComboModbusDataType.Hide();
 
-			ModbusPollParameter modParam = new ModbusPollParameter(mPoll.DataMaps[0].mParams[mModbusSelectedRowIndex]);
+			ModbusPollParameter modParam = new ModbusPollParameter(mPoll.DataMaps[0].Parameters[mModbusSelectedRowIndex]);
 			modParam.Type = (DataType)mComboModbusDataType.SelectedItem;
 			mBindingSourceModbus[mModbusSelectedRowIndex] = modParam;
 
@@ -300,7 +300,7 @@ namespace EModbus
 		{
 			int index = listBox_mapsList.SelectedIndex;
 
-			mBindingSourceModbus.DataSource = mPoll.DataMaps[index].mParams;
+			mBindingSourceModbus.DataSource = mPoll.DataMaps[index].Parameters;
 			textBox_mapName.Text = mBindingListMapNames[index].Name;
 		}
 

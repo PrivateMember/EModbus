@@ -23,17 +23,21 @@ namespace EModbus
 		{
 			protected byte[] mRawData = null;
 			private bool mDataValid = false;
-			public List<PollInterpreterMap> DataMaps = new List<PollInterpreterMap>(); 
+			private UInt32 mPollCounter = 0;
+			private List<PollInterpreterMap> mDataMaps = new List<PollInterpreterMap>();
 
 			#region internal methdos
 			// these methods are only accessible from ModbusMaster Class which is inside this assembly
 			internal void SetResponseData(byte[] data) { mRawData = data; } // mRawData = data.Clone() as byte[]
 			internal void SetDataValidity(bool state) { mDataValid = state; }
+			internal void IncrementCounter() { mPollCounter++; }
 			#endregion internal methods
 
-			public RegisterOrder RegOrder { get; set; } = RegisterOrder.Inverse;
+			public List<PollInterpreterMap> DataMaps { get { return mDataMaps; } }
+			public UInt32 PollCounter { get { return mPollCounter; } }
+			public RegisterOrder RegOrder { get; set; } = RegisterOrder.MSRFirst;
 			public ByteOrder ByteOrder { get; set; } = ByteOrder.MSBFirst;
-			public byte[] ResponseData { get { return mRawData.Clone() as byte[]; } }
+			public byte[] ResponseData { get { return mRawData == null ? null : mRawData.Clone() as byte[]; } }
 			public bool DataValid { get { return mDataValid; } }
 			public byte DeviceID { get; set; }
 			public UInt16 DataAddress { get; set; }
@@ -88,12 +92,15 @@ namespace EModbus
 				mDataValid = poll.mDataValid;
 				if (poll.mRawData != null)
 					mRawData = poll.mRawData.Clone() as byte[];
+				mPollCounter = poll.mPollCounter;
+				this.ByteOrder = poll.ByteOrder;
+				this.RegOrder = poll.RegOrder;
 
-				DataMaps = new List<PollInterpreterMap>(poll.DataMaps.Count);
+				mDataMaps = new List<PollInterpreterMap>(poll.DataMaps.Count);
 
 				foreach(PollInterpreterMap map in poll.DataMaps)
 				{
-					DataMaps.Add((PollInterpreterMap)map.Clone());
+					mDataMaps.Add((PollInterpreterMap)map.Clone());
 				}
 			}
 
@@ -104,7 +111,9 @@ namespace EModbus
 				if (poll.DeviceID == this.DeviceID &&
 					poll.DataAddress == DataAddress &&
 					poll.DataCount == DataCount &&
-					poll.ObjectType == ObjectType)
+					poll.ObjectType == ObjectType &&
+					poll.RegOrder == this.RegOrder &&
+					poll.ByteOrder == this.ByteOrder)
 				{
 					return true;
 				}
@@ -142,6 +151,115 @@ namespace EModbus
 			public object Clone()
 			{
 				return new ModbusPoll(this);
+			}
+
+			public string MapToString(int mapIndex)
+			{
+				ModbusPollParameter p;
+				string str = "";
+				for (int i = 0; i < DataMaps[mapIndex].Parameters.Count; i++)
+				{
+					p = DataMaps[mapIndex].Parameters[i];
+					str += "( " + p.ByteIndex.ToString("D2") + "," + p.ByteCount + " , " + p.BitIndex + " )\t";
+					str += p.Name + "\t";
+					str += p.Type + "\t";
+					//DataReorder(ResponseData, )
+					DataReorder(mRawData, p.ByteIndex, DataMaps[mapIndex].Parameters[i].Type, this.RegOrder, this.ByteOrder);
+					object obj = DataMaps[mapIndex].GetParamValue(mRawData, i);
+					str += obj.ToString();
+					str += "\r\n";
+				}
+
+				return str;
+			}
+			public string MapToString()
+			{
+				ModbusPollParameter p;
+				
+				string str = Name + "[" + PollCounter + "]\r\n";
+
+				for (int mapIndex = 0; mapIndex < DataMaps.Count; mapIndex++)
+				{
+					str += MapToString(mapIndex);
+					str += "\r\n";
+				}
+
+				return str;
+			}
+
+			private void SwapRegisterBytes(byte[] data, int regIndex, int startIndex)
+			{
+				byte swap = data[startIndex + regIndex * 2];
+				data[startIndex + regIndex * 2] = data[startIndex + regIndex * 2 + 1];
+				data[startIndex + regIndex * 2 + 1] = swap;
+			}
+
+			private void SwapRegisters(byte[] data, int regIndex1, int regIndex2, int startIndex)
+			{
+				byte swap;
+
+				swap = data[startIndex + regIndex1 * 2];
+				data[startIndex + regIndex1 * 2] = data[startIndex + regIndex2 * 2];
+				data[startIndex + regIndex2 * 2] = swap;
+
+				swap = data[startIndex + regIndex1 * 2 + 1];
+				data[startIndex + regIndex1 * 2 + 1] = data[startIndex + regIndex2 * 2 + 1];
+				data[startIndex + regIndex2 * 2 + 1] = swap;
+			}
+
+			private void DataReorder(byte[] data, int startIndex, DataType type, RegisterOrder rOrder = RegisterOrder.MSRFirst, ByteOrder bOrder = ByteOrder.MSBFirst)
+			{
+				int regCount = 0;
+				switch (type)
+				{
+					case DataType.UInt64: 
+					case DataType.Int64:
+					case DataType.Double:
+						regCount = 4; break;
+					case DataType.UInt32:
+					case DataType.Int32:
+					case DataType.Float:
+						regCount = 2; break;
+					case DataType.UInt16:
+					case DataType.Int16:
+						regCount = 1; break;
+					default: return;
+				}
+
+				if(regCount == 1)
+				{
+					if(bOrder == ByteOrder.MSBFirst)
+					{
+						SwapRegisterBytes(data, 0, startIndex);
+					}
+				}
+				else if(regCount == 2)
+				{
+					if(RegOrder == RegisterOrder.MSRFirst)
+					{
+						SwapRegisters(data, 0, 1, startIndex);
+					}
+					if (bOrder == ByteOrder.MSBFirst)
+					{
+						SwapRegisterBytes(data, 0, startIndex);
+						SwapRegisterBytes(data, 1, startIndex);
+					}
+				}
+				else if(regCount == 4)
+				{
+					if (RegOrder == RegisterOrder.MSRFirst)
+					{
+						SwapRegisters(data, 0, 3, startIndex);
+						SwapRegisters(data, 1, 2, startIndex);
+					}
+					if (bOrder == ByteOrder.MSBFirst)
+					{
+						SwapRegisterBytes(data, 0, startIndex);
+						SwapRegisterBytes(data, 1, startIndex);
+						SwapRegisterBytes(data, 2, startIndex);
+						SwapRegisterBytes(data, 3, startIndex);
+					}
+				}
 			}
 		}
 
@@ -334,6 +452,8 @@ namespace EModbus
 			{
 				result += "Exception ( " + response.ModbusException.ToString() + " )";
 			}
+
+			poll.IncrementCounter();
 
 			OnPollFinished?.Invoke(result, poll);
 		}

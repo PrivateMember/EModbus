@@ -47,6 +47,10 @@
 			this.label8 = new System.Windows.Forms.Label();
 			this.textBox_name = new System.Windows.Forms.TextBox();
 			this.button_maps = new System.Windows.Forms.Button();
+			this.comboBox_byteOrder = new System.Windows.Forms.ComboBox();
+			this.label9 = new System.Windows.Forms.Label();
+			this.comboBox_regOrder = new System.Windows.Forms.ComboBox();
+			this.label10 = new System.Windows.Forms.Label();
 			((System.ComponentModel.ISupportInitialize)(this.numericUpDown_MBID)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.numericUpDown_regAddr)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.numericUpDown_regCount)).BeginInit();
@@ -164,7 +168,7 @@
 			this.checkBox_devEnabled.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
 			this.checkBox_devEnabled.Checked = true;
 			this.checkBox_devEnabled.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.checkBox_devEnabled.Location = new System.Drawing.Point(116, 260);
+			this.checkBox_devEnabled.Location = new System.Drawing.Point(117, 315);
 			this.checkBox_devEnabled.Name = "checkBox_devEnabled";
 			this.checkBox_devEnabled.Size = new System.Drawing.Size(15, 14);
 			this.checkBox_devEnabled.TabIndex = 8;
@@ -173,7 +177,7 @@
 			// label5
 			// 
 			this.label5.AutoSize = true;
-			this.label5.Location = new System.Drawing.Point(27, 260);
+			this.label5.Location = new System.Drawing.Point(28, 315);
 			this.label5.Name = "label5";
 			this.label5.Size = new System.Drawing.Size(46, 13);
 			this.label5.TabIndex = 9;
@@ -218,7 +222,7 @@
 			// 
 			// button_ok
 			// 
-			this.button_ok.Location = new System.Drawing.Point(137, 291);
+			this.button_ok.Location = new System.Drawing.Point(137, 344);
 			this.button_ok.Name = "button_ok";
 			this.button_ok.Size = new System.Drawing.Size(100, 34);
 			this.button_ok.TabIndex = 12;
@@ -228,7 +232,7 @@
 			// 
 			// button_cancel
 			// 
-			this.button_cancel.Location = new System.Drawing.Point(31, 291);
+			this.button_cancel.Location = new System.Drawing.Point(31, 344);
 			this.button_cancel.Name = "button_cancel";
 			this.button_cancel.Size = new System.Drawing.Size(100, 34);
 			this.button_cancel.TabIndex = 13;
@@ -291,7 +295,7 @@
 			// 
 			// button_maps
 			// 
-			this.button_maps.Location = new System.Drawing.Point(256, 291);
+			this.button_maps.Location = new System.Drawing.Point(256, 344);
 			this.button_maps.Name = "button_maps";
 			this.button_maps.Size = new System.Drawing.Size(100, 34);
 			this.button_maps.TabIndex = 18;
@@ -299,11 +303,51 @@
 			this.button_maps.UseVisualStyleBackColor = true;
 			this.button_maps.Click += new System.EventHandler(this.button_maps_Click);
 			// 
+			// comboBox_byteOrder
+			// 
+			this.comboBox_byteOrder.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.comboBox_byteOrder.FormattingEnabled = true;
+			this.comboBox_byteOrder.Location = new System.Drawing.Point(115, 249);
+			this.comboBox_byteOrder.Name = "comboBox_byteOrder";
+			this.comboBox_byteOrder.Size = new System.Drawing.Size(121, 21);
+			this.comboBox_byteOrder.TabIndex = 20;
+			// 
+			// label9
+			// 
+			this.label9.AutoSize = true;
+			this.label9.Location = new System.Drawing.Point(26, 252);
+			this.label9.Name = "label9";
+			this.label9.Size = new System.Drawing.Size(57, 13);
+			this.label9.TabIndex = 19;
+			this.label9.Text = "Byte Order";
+			// 
+			// comboBox_regOrder
+			// 
+			this.comboBox_regOrder.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.comboBox_regOrder.FormattingEnabled = true;
+			this.comboBox_regOrder.Location = new System.Drawing.Point(115, 276);
+			this.comboBox_regOrder.Name = "comboBox_regOrder";
+			this.comboBox_regOrder.Size = new System.Drawing.Size(121, 21);
+			this.comboBox_regOrder.TabIndex = 22;
+			// 
+			// label10
+			// 
+			this.label10.AutoSize = true;
+			this.label10.Location = new System.Drawing.Point(26, 279);
+			this.label10.Name = "label10";
+			this.label10.Size = new System.Drawing.Size(75, 13);
+			this.label10.TabIndex = 21;
+			this.label10.Text = "Register Order";
+			// 
 			// ModbusPollDefinitionForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(379, 348);
+			this.ClientSize = new System.Drawing.Size(379, 414);
+			this.Controls.Add(this.comboBox_regOrder);
+			this.Controls.Add(this.label10);
+			this.Controls.Add(this.comboBox_byteOrder);
+			this.Controls.Add(this.label9);
 			this.Controls.Add(this.button_maps);
 			this.Controls.Add(this.textBox_name);
 			this.Controls.Add(this.label8);
@@ -356,5 +400,9 @@
 		private System.Windows.Forms.Label label8;
 		private System.Windows.Forms.TextBox textBox_name;
 		private System.Windows.Forms.Button button_maps;
+		private System.Windows.Forms.ComboBox comboBox_byteOrder;
+		private System.Windows.Forms.Label label9;
+		private System.Windows.Forms.ComboBox comboBox_regOrder;
+		private System.Windows.Forms.Label label10;
 	}
 }

@@ -13,6 +13,7 @@ namespace Read
 {
 	public partial class Form1 : Form
 	{
+		private string[] mPortNames = null;
 		private ModbusMaster mBusMaster = new ModbusMaster();
 		private System.IO.Ports.SerialPort mPort = new System.IO.Ports.SerialPort();
 
@@ -21,8 +22,8 @@ namespace Read
 			InitializeComponent();
 
 			System.Threading.Thread.CurrentThread.Name = "UI Thread";
+
 			RefreshPorts();
-			if (comboBox_ports.Items.Count > 0) comboBox_ports.SelectedIndex = 0;
 
 			mBusMaster.OnPollFinished += MBusMaster_OnPollFinished;
 			mBusMaster.OnStatusChanged += MBusMaster_OnStatusChanged;
@@ -59,7 +60,6 @@ namespace Read
 				}
 			}
 		}
-	
 
 		private void MBusMaster_OnStatusChanged(MasterStatus status)
 		{
@@ -91,23 +91,7 @@ namespace Read
 			{
 				if(poll.DataValid)
 				{
-					ModbusPollParameter p;
-					string str = "";
-
-					for (int m = 0; m < poll.DataMaps.Count; m++)
-					{
-						for (int i = 0; i < poll.DataMaps[m].mParams.Count; i++)
-						{
-							p = poll.DataMaps[m].mParams[i];
-							str += "( " + p.ByteIndex + "," + p.ByteCount + " , " + p.BitIndex + " )\t";
-							str += p.Name + "\t";
-							str += p.Type + "\t";
-							str += poll.DataMaps[m].ValueToString(poll.ResponseData, i);
-							str += "\r\n";
-						}
-
-						RichTechBoxAddData(richTextBox_data, str);
-					}
+					RichTechBoxAddData(richTextBox_data, poll.MapToString());
 				}
 				else
 				{
@@ -184,24 +168,20 @@ namespace Read
 
 		private void RefreshPorts()
 		{
+			mPortNames = Utilities.Utils.QuerySerialPorts();
+
 			MethodInvoker method = (MethodInvoker)delegate
 			{
 				comboBox_ports.Items.Clear();
-				string[] names = Utilities.Utils.QuerySerialPorts();
-
-				if (names.Length > 0)
+				if (mPortNames.Length > 0)
 				{
-					comboBox_ports.Items.AddRange(names);
+					comboBox_ports.Items.AddRange(mPortNames);
+					comboBox_ports.SelectedIndex = 0;
 				}
 			};
-			if (comboBox_ports.InvokeRequired == true)
-			{
-				comboBox_ports.Invoke(method);
-			}
-			else
-			{
-				method.Invoke();
-			}
+
+			if (comboBox_ports.InvokeRequired == true) comboBox_ports.Invoke(method);
+			else method.Invoke();
 		}
 
 		private void RefreshTreeView()
