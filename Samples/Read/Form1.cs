@@ -13,25 +13,24 @@ namespace Read
 {
 	public partial class Form1 : Form
 	{
-		private string[] mPortNames = null;
 		private ModbusMaster mBusMaster = new ModbusMaster();
 		private System.IO.Ports.SerialPort mPort = new System.IO.Ports.SerialPort();
+		private delegate void UpdateControlsDelegate(MasterStatus status);
 
 		public Form1()
 		{
 			InitializeComponent();
 
-			System.Threading.Thread.CurrentThread.Name = "UI Thread";
+			System.Threading.Thread.CurrentThread.Name = "EModbus UI Thread";
 
-			RefreshPorts();
+			Utilities.Controls.PopulateComboboxWithSerialPortNames(comboBox_ports);
 
 			mBusMaster.OnPollFinished += MBusMaster_OnPollFinished;
 			mBusMaster.OnStatusChanged += MBusMaster_OnStatusChanged;
-
+			mBusMaster.OnException += MBusMaster_OnException;
+			
 			button_pauseResume.Enabled = false;
 		}
-
-		private delegate void UpdateControlsDelegate(MasterStatus status);
 
 		void UpdateControls(MasterStatus status)
 		{
@@ -50,6 +49,7 @@ namespace Read
 					button_startPoll.Text = "Stop";
 					comboBox_ports.Enabled = false;
 					button_pauseResume.Enabled = true;
+					button_startPoll.Enabled = true;
 				}
 				else if (status == MasterStatus.Stopped)
 				{
@@ -57,57 +57,34 @@ namespace Read
 					button_pauseResume.Text = "Resume";
 					button_pauseResume.Enabled = false;
 					comboBox_ports.Enabled = true;
+					button_startPoll.Enabled = true;
 				}
 			}
 		}
 
 		private void MBusMaster_OnStatusChanged(MasterStatus status)
 		{
-
 			UpdateControls(status);
-			//label_status.InvokeIfRequired(() =>
-			//{
-			//	label_status.Text = status.ToString();
+		}
 
-			//	if (status == MasterStatus.Paused) button_pauseResume.Text = "Resume";
-			//	else if (status == MasterStatus.Running)
-			//	{
-			//		button_pauseResume.Text = "Pause";
-			//		button_startPoll.Text = "Stop";
-			//		button_pauseResume.Enabled = true;
-			//	}
-			//	else if (status == MasterStatus.Stopped)
-			//	{
-			//		button_startPoll.Text = "Start";
-			//		button_pauseResume.Text = "Resume";
-			//		button_pauseResume.Enabled = false;
-			//	}
-			//});
+		private void MBusMaster_OnException(string msg)
+		{
+			Utilities.Controls.RichTextBoxAddDataAndScroll(richTextBox_messages, msg);
 		}
 
 		private void MBusMaster_OnPollFinished(string data, ModbusMaster.ModbusPoll poll)
 		{
 			richTextBox_data.InvokeIfRequired(() =>
 			{
-				if(poll.DataValid)
+				if (poll.DataValid)
 				{
-					RichTechBoxAddData(richTextBox_data, poll.MapToString());
+					Utilities.Controls.RichTextBoxAddDataAndScroll(richTextBox_data, poll.MapToString());
 				}
 				else
 				{
-					RichTechBoxAddData(richTextBox_data, data);
+					Utilities.Controls.RichTextBoxAddDataAndScroll(richTextBox_data, data);
 				}
 			});
-		}
-
-		private void button_addPoll_Click(object sender, EventArgs e)
-		{
-			ModbusMaster.ModbusPoll poll = ModbusMaster.ModbusPoll.PollWizard();
-			
-			if (poll != null)
-			{
-				mBusMaster.AddPoll(poll, OnPollAdded);
-			}
 		}
 
 		private void OnPollAdded(bool state, string message)
@@ -116,72 +93,27 @@ namespace Read
 			{
 				RefreshTreeView();
 
-				RichTechBoxAddData(richTextBox_messages, message);
+				Utilities.Controls.RichTextBoxAddDataAndScroll(richTextBox_messages, message);
 			});
 		}
 
-		private void button_delPoll_Click(object sender, EventArgs e)
-		{
-			TreeNode node = treeView_polls.SelectedNode;
-			if (node != null)
-			{
-				if (node.Parent != null) node = node.Parent;
-
-				mBusMaster.RemovePoll((UInt32)node.Index, OnRemovePollHandler);
-			}
-		}
-
-		void OnRemovePollHandler(bool state, string message)
+		void OnPollRemove(bool state, string message)
 		{
 			this.InvokeIfRequired(() =>
 			{
 				RefreshTreeView();
-				RichTechBoxAddData(richTextBox_messages, message);
+				Utilities.Controls.RichTextBoxAddDataAndScroll(richTextBox_messages, message);
 			});
 		}
 
-		private void button_startPoll_Click(object sender, EventArgs e)
+		void OnPollReplace(UInt32 index, ModbusMaster.ModbusPoll poll, bool state, string message)
 		{
-			if (mBusMaster.Status == MasterStatus.Stopped)
-			{
-				mPort.PortName = comboBox_ports.SelectedItem as string;
-				mBusMaster.SetComm(mPort);
-				mBusMaster.Start();
-			}
-			else
-			{
-				mBusMaster.Stop();
-			}
-		}
+			Utilities.Controls.RichTextBoxAddDataAndScroll(richTextBox_messages, message);
 
-		private void button_pauseResume_Click(object sender, EventArgs e)
-		{
-			if (mBusMaster.Status == MasterStatus.Paused)
+			if (state)
 			{
-				mBusMaster.Resume();
+				ReplaceNodeOnTreeView((int)index, poll);
 			}
-			else
-			{
-				mBusMaster.Pause();
-			}
-		}
-
-		private void RefreshPorts()
-		{
-			mPortNames = Utilities.Utils.QuerySerialPorts();
-
-			MethodInvoker method = (MethodInvoker)delegate
-			{
-				comboBox_ports.Items.Clear();
-				if (mPortNames.Length > 0)
-				{
-					comboBox_ports.Items.AddRange(mPortNames);
-					comboBox_ports.SelectedIndex = 0;
-				}
-			};
-
-			if (comboBox_ports.InvokeRequired == true) comboBox_ports.Invoke(method);
-			else method.Invoke();
 		}
 
 		private void RefreshTreeView()
@@ -204,6 +136,82 @@ namespace Read
 			treeView_polls.EndUpdate();
 		}
 
+		private TreeNode GetSelectedPollNodeFromTreeView()
+		{
+			TreeNode node = treeView_polls.SelectedNode;
+			if (node == null) return null;
+			if (node.Parent != null) node = node.Parent;
+			return node;
+		}
+
+		private void ReplaceNodeOnTreeView(int index, ModbusMaster.ModbusPoll poll)
+		{
+			if (index < 0 || index >= treeView_polls.Nodes.Count || poll == null) return;
+			treeView_polls.InvokeIfRequired(() =>
+			{
+				treeView_polls.BeginUpdate();
+				treeView_polls.Nodes.RemoveAt(index);
+				treeView_polls.Nodes.Insert(index, poll.Name);
+				treeView_polls.Nodes[index].Nodes.Add("ID : " + poll.DeviceID.ToString());
+				treeView_polls.Nodes[index].Nodes.Add("Address : " + poll.DataAddress.ToString());
+				treeView_polls.Nodes[index].Nodes.Add("Count : " + poll.DataCount.ToString());
+				treeView_polls.Nodes[index].Nodes.Add("Type : " + poll.ObjectType.ToString());
+				treeView_polls.Nodes[index].Nodes.Add("Timeout : " + poll.TimeoutMilisec.ToString());
+				treeView_polls.Nodes[index].Nodes.Add("Enabled : " + poll.Enabled.ToString());
+				treeView_polls.Nodes[index].Expand();
+				treeView_polls.EndUpdate();
+			});
+		}
+
+		private void EditPoll(uint index)
+		{
+			ModbusMaster.ModbusPoll poll = mBusMaster.GetPoll(index);
+			poll = ModbusMaster.ModbusPoll.PollWizard(poll);
+			mBusMaster.ReplacePoll(index, poll, OnPollReplace);
+		}
+
+		private void editMapsToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+		}
+
+		private void numericUpDown1_ValueChanged(object sender, EventArgs e)
+		{
+			mBusMaster.SetScanRate((UInt32)numericUpDown_scanRate.Value);
+		}
+
+		private void button_startPoll_Click(object sender, EventArgs e)
+		{
+			button_startPoll.Enabled = false;
+			if (mBusMaster.Status == MasterStatus.Stopped)
+			{
+				mPort.PortName = comboBox_ports.SelectedItem as string;
+				mBusMaster.SetComm(mPort);
+				mBusMaster.Start();
+			}
+			else
+			{
+				button_startPoll.Enabled = false;
+				mBusMaster.Stop();
+			}
+		}
+
+		private void button_pauseResume_Click(object sender, EventArgs e)
+		{
+			if (mBusMaster.Status == MasterStatus.Paused)
+			{
+				mBusMaster.Resume();
+			}
+			else
+			{
+				mBusMaster.Pause();
+			}
+		}
+
+		private void button_scanPorts_Click(object sender, EventArgs e)
+		{
+			Utilities.Controls.PopulateComboboxWithSerialPortNames(comboBox_ports);
+		}
+
 		private void Form1_FormClosing(object sender, FormClosingEventArgs e)
 		{
 			mBusMaster.OnPollFinished -= MBusMaster_OnPollFinished;
@@ -213,62 +221,24 @@ namespace Read
 
 		private void treeView_polls_DoubleClick(object sender, EventArgs e)
 		{
+			TreeNode node = GetSelectedPollNodeFromTreeView();
+			if (node != null) { EditPoll((uint)node.Index); }
+		}
+
+		private void button_addPoll_Click(object sender, EventArgs e)
+		{
+			mBusMaster.AddPoll(ModbusMaster.ModbusPoll.PollWizard(), OnPollAdded);
+		}
+
+		private void button_delPoll_Click(object sender, EventArgs e)
+		{
 			TreeNode node = treeView_polls.SelectedNode;
-
-			if (node == null) return;
-
-			if (node.Parent != null) node = node.Parent;
-
-			int index = node.Index;
-
-			ModbusMaster.ModbusPoll poll = mBusMaster.GetPoll((uint)index);
-
-
-			ModbusPollDefinitionForm form = new ModbusPollDefinitionForm();
-			form.SetPoll(poll);
-			if(form.ShowDialog() == DialogResult.OK)
+			if (node != null)
 			{
-				poll = form.GetPoll();
-				mBusMaster.ReplacePoll((uint)index, poll, OnReplacePollHandler);
+				if (node.Parent != null) node = node.Parent;
+
+				mBusMaster.RemovePoll((UInt32)node.Index, OnPollRemove);
 			}
-		}
-
-		void OnReplacePollHandler(UInt32 index, ModbusMaster.ModbusPoll poll, bool state, string message)
-		{
-			this.InvokeIfRequired(() =>
-			{
-				RichTechBoxAddData(richTextBox_messages, message);
-
-				if (state)
-				{
-					treeView_polls.Nodes.RemoveAt((int)index);
-					treeView_polls.Nodes.Insert((int)index, poll.Name);
-					treeView_polls.Nodes[(int)index].Nodes.Add("ID : " + poll.DeviceID.ToString());
-					treeView_polls.Nodes[(int)index].Nodes.Add("Address : " + poll.DataAddress.ToString());
-					treeView_polls.Nodes[(int)index].Nodes.Add("Count : " + poll.DataCount.ToString());
-					treeView_polls.Nodes[(int)index].Nodes.Add("Type : " + poll.ObjectType.ToString());
-					treeView_polls.Nodes[(int)index].Nodes.Add("Timeout : " + poll.TimeoutMilisec.ToString());
-					treeView_polls.Nodes[(int)index].Nodes.Add("Enabled : " + poll.Enabled.ToString());
-
-					treeView_polls.Nodes[(int)index].Expand();
-				}
-			});
-		}
-
-		void RichTechBoxAddData(RichTextBox rtb, String str)
-		{
-			rtb.InvokeIfRequired(() =>
-			{
-				rtb.Text += str + "\r\n";
-				rtb.SelectionStart = rtb.Text.Length;
-				rtb.SelectionLength = 0;
-				rtb.ScrollToCaret();
-			});
-		}
-
-		private void editMapsToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-
 		}
 	}
 }

@@ -105,9 +105,9 @@ namespace EModbus
 					switch (p.Type)
 					{
 						case DataType.Int16:
-							obj = valueU16;	break;
+							obj = valueI16;	break;
 						case DataType.UInt16:
-							obj = valueI16; break;
+							obj = valueU16; break;
 						case DataType.BOOLEAN:
 							obj = valueU16 > 0 ? true : false; break;
 						case DataType.DigitalIO:

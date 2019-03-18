@@ -44,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BasicDataTypes.cs" />
+    <Compile Include="ModbusPoll.cs" />
     <Compile Include="PollInterpreterMap.cs" />
     <Compile Include="PollMapDefinitionForm.cs">
       <SubType>Form</SubType>
@@ -51,6 +52,7 @@
     <Compile Include="PollMapDefinitionForm.Designer.cs">
       <DependentUpon>PollMapDefinitionForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="SysActionCommands.cs" />
     <Compile Include="UserPollCommand.cs" />
     <Compile Include="Interfaces.cs" />
     <Compile Include="ModbusMaster.cs" />

@@ -75,6 +75,7 @@ namespace EModbus
 
 		public void SetPoll(ModbusMaster.ModbusPoll poll)
 		{
+			if (poll == null) return;
 			mPoll = poll.Clone() as ModbusMaster.ModbusPoll;
 
 			numericUpDown_MBID.Value = mPoll.DeviceID;

@@ -12,7 +12,7 @@ namespace EModbus
 		AddPoll,
 		RemovePoll,
 		ReplacePoll,
-		GetPoll,
+		GetPoll
 	}
 
 	class UserPollCommand

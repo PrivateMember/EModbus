@@ -39,30 +39,35 @@
 			this.richTextBox_messages = new System.Windows.Forms.RichTextBox();
 			this.menuStrip1 = new System.Windows.Forms.MenuStrip();
 			this.pollToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.pollToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
 			this.newMAsterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
 			this.openMasterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.pollToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
 			this.newPollToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.openPollToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.savePollToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
 			this.masterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.settingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.startToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.stopToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.pauseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.numericUpDown_scanRate = new System.Windows.Forms.NumericUpDown();
+			this.label1 = new System.Windows.Forms.Label();
+			this.label2 = new System.Windows.Forms.Label();
+			this.button_scanPorts = new System.Windows.Forms.Button();
 			this.menuStrip1.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.numericUpDown_scanRate)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// treeView_polls
 			// 
 			this.treeView_polls.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)));
-			this.treeView_polls.Location = new System.Drawing.Point(11, 74);
+			this.treeView_polls.Location = new System.Drawing.Point(11, 103);
 			this.treeView_polls.Name = "treeView_polls";
-			this.treeView_polls.Size = new System.Drawing.Size(228, 561);
+			this.treeView_polls.Size = new System.Drawing.Size(228, 532);
 			this.treeView_polls.TabIndex = 0;
 			this.treeView_polls.DoubleClick += new System.EventHandler(this.treeView_polls_DoubleClick);
 			// 
@@ -88,9 +93,9 @@
 			// 
 			// button_startPoll
 			// 
-			this.button_startPoll.Location = new System.Drawing.Point(492, 33);
+			this.button_startPoll.Location = new System.Drawing.Point(663, 66);
 			this.button_startPoll.Name = "button_startPoll";
-			this.button_startPoll.Size = new System.Drawing.Size(92, 28);
+			this.button_startPoll.Size = new System.Drawing.Size(63, 28);
 			this.button_startPoll.TabIndex = 3;
 			this.button_startPoll.Text = "Start";
 			this.button_startPoll.UseVisualStyleBackColor = true;
@@ -100,7 +105,7 @@
 			// 
 			this.comboBox_ports.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			this.comboBox_ports.FormattingEnabled = true;
-			this.comboBox_ports.Location = new System.Drawing.Point(304, 40);
+			this.comboBox_ports.Location = new System.Drawing.Point(460, 40);
 			this.comboBox_ports.Name = "comboBox_ports";
 			this.comboBox_ports.Size = new System.Drawing.Size(121, 21);
 			this.comboBox_ports.TabIndex = 5;
@@ -108,9 +113,9 @@
 			// richTextBox_data
 			// 
 			this.richTextBox_data.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)));
-			this.richTextBox_data.Location = new System.Drawing.Point(266, 74);
+			this.richTextBox_data.Location = new System.Drawing.Point(266, 103);
 			this.richTextBox_data.Name = "richTextBox_data";
-			this.richTextBox_data.Size = new System.Drawing.Size(460, 561);
+			this.richTextBox_data.Size = new System.Drawing.Size(460, 532);
 			this.richTextBox_data.TabIndex = 6;
 			this.richTextBox_data.Text = "";
 			// 
@@ -119,15 +124,15 @@
 			this.label_status.AutoSize = true;
 			this.label_status.Location = new System.Drawing.Point(797, 43);
 			this.label_status.Name = "label_status";
-			this.label_status.Size = new System.Drawing.Size(35, 13);
+			this.label_status.Size = new System.Drawing.Size(37, 13);
 			this.label_status.TabIndex = 7;
-			this.label_status.Text = "label1";
+			this.label_status.Text = "Status";
 			// 
 			// button_pauseResume
 			// 
-			this.button_pauseResume.Location = new System.Drawing.Point(605, 35);
+			this.button_pauseResume.Location = new System.Drawing.Point(663, 35);
 			this.button_pauseResume.Name = "button_pauseResume";
-			this.button_pauseResume.Size = new System.Drawing.Size(92, 28);
+			this.button_pauseResume.Size = new System.Drawing.Size(63, 28);
 			this.button_pauseResume.TabIndex = 8;
 			this.button_pauseResume.Text = "Pause";
 			this.button_pauseResume.UseVisualStyleBackColor = true;
@@ -136,9 +141,9 @@
 			// richTextBox_messages
 			// 
 			this.richTextBox_messages.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)));
-			this.richTextBox_messages.Location = new System.Drawing.Point(732, 74);
+			this.richTextBox_messages.Location = new System.Drawing.Point(732, 103);
 			this.richTextBox_messages.Name = "richTextBox_messages";
-			this.richTextBox_messages.Size = new System.Drawing.Size(190, 561);
+			this.richTextBox_messages.Size = new System.Drawing.Size(190, 532);
 			this.richTextBox_messages.TabIndex = 9;
 			this.richTextBox_messages.Text = "";
 			// 
@@ -166,6 +171,35 @@
 			this.pollToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
 			this.pollToolStripMenuItem.Text = "File";
 			// 
+			// newMAsterToolStripMenuItem
+			// 
+			this.newMAsterToolStripMenuItem.Name = "newMAsterToolStripMenuItem";
+			this.newMAsterToolStripMenuItem.Size = new System.Drawing.Size(142, 22);
+			this.newMAsterToolStripMenuItem.Text = "New Master";
+			// 
+			// toolStripMenuItem1
+			// 
+			this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+			this.toolStripMenuItem1.Size = new System.Drawing.Size(142, 22);
+			this.toolStripMenuItem1.Text = "Open Master";
+			// 
+			// openMasterToolStripMenuItem
+			// 
+			this.openMasterToolStripMenuItem.Name = "openMasterToolStripMenuItem";
+			this.openMasterToolStripMenuItem.Size = new System.Drawing.Size(142, 22);
+			this.openMasterToolStripMenuItem.Text = "Save Master";
+			// 
+			// toolStripSeparator1
+			// 
+			this.toolStripSeparator1.Name = "toolStripSeparator1";
+			this.toolStripSeparator1.Size = new System.Drawing.Size(139, 6);
+			// 
+			// exitToolStripMenuItem
+			// 
+			this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
+			this.exitToolStripMenuItem.Size = new System.Drawing.Size(142, 22);
+			this.exitToolStripMenuItem.Text = "Exit";
+			// 
 			// pollToolStripMenuItem1
 			// 
 			this.pollToolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -176,52 +210,23 @@
 			this.pollToolStripMenuItem1.Size = new System.Drawing.Size(39, 20);
 			this.pollToolStripMenuItem1.Text = "Poll";
 			// 
-			// newMAsterToolStripMenuItem
-			// 
-			this.newMAsterToolStripMenuItem.Name = "newMAsterToolStripMenuItem";
-			this.newMAsterToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-			this.newMAsterToolStripMenuItem.Text = "New Master";
-			// 
-			// openMasterToolStripMenuItem
-			// 
-			this.openMasterToolStripMenuItem.Name = "openMasterToolStripMenuItem";
-			this.openMasterToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-			this.openMasterToolStripMenuItem.Text = "Save Master";
-			// 
-			// toolStripSeparator1
-			// 
-			this.toolStripSeparator1.Name = "toolStripSeparator1";
-			this.toolStripSeparator1.Size = new System.Drawing.Size(149, 6);
-			// 
-			// exitToolStripMenuItem
-			// 
-			this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-			this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-			this.exitToolStripMenuItem.Text = "Exit";
-			// 
 			// newPollToolStripMenuItem
 			// 
 			this.newPollToolStripMenuItem.Name = "newPollToolStripMenuItem";
-			this.newPollToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.newPollToolStripMenuItem.Size = new System.Drawing.Size(126, 22);
 			this.newPollToolStripMenuItem.Text = "New Poll";
 			// 
 			// openPollToolStripMenuItem
 			// 
 			this.openPollToolStripMenuItem.Name = "openPollToolStripMenuItem";
-			this.openPollToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.openPollToolStripMenuItem.Size = new System.Drawing.Size(126, 22);
 			this.openPollToolStripMenuItem.Text = "Open Poll";
 			// 
 			// savePollToolStripMenuItem
 			// 
 			this.savePollToolStripMenuItem.Name = "savePollToolStripMenuItem";
-			this.savePollToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.savePollToolStripMenuItem.Size = new System.Drawing.Size(126, 22);
 			this.savePollToolStripMenuItem.Text = "Save Poll";
-			// 
-			// toolStripMenuItem1
-			// 
-			this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-			this.toolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
-			this.toolStripMenuItem1.Text = "Open Master";
 			// 
 			// masterToolStripMenuItem
 			// 
@@ -238,38 +243,99 @@
 			// settingToolStripMenuItem
 			// 
 			this.settingToolStripMenuItem.Name = "settingToolStripMenuItem";
-			this.settingToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.settingToolStripMenuItem.Size = new System.Drawing.Size(111, 22);
 			this.settingToolStripMenuItem.Text = "Setting";
 			// 
 			// startToolStripMenuItem
 			// 
 			this.startToolStripMenuItem.Name = "startToolStripMenuItem";
-			this.startToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.startToolStripMenuItem.Size = new System.Drawing.Size(111, 22);
 			this.startToolStripMenuItem.Text = "Start";
 			// 
 			// stopToolStripMenuItem
 			// 
 			this.stopToolStripMenuItem.Name = "stopToolStripMenuItem";
-			this.stopToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.stopToolStripMenuItem.Size = new System.Drawing.Size(111, 22);
 			this.stopToolStripMenuItem.Text = "Stop";
 			// 
 			// closeToolStripMenuItem
 			// 
 			this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
-			this.closeToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.closeToolStripMenuItem.Size = new System.Drawing.Size(111, 22);
 			this.closeToolStripMenuItem.Text = "Close";
 			// 
 			// pauseToolStripMenuItem
 			// 
 			this.pauseToolStripMenuItem.Name = "pauseToolStripMenuItem";
-			this.pauseToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.pauseToolStripMenuItem.Size = new System.Drawing.Size(111, 22);
 			this.pauseToolStripMenuItem.Text = "Pause";
+			// 
+			// numericUpDown_scanRate
+			// 
+			this.numericUpDown_scanRate.Increment = new decimal(new int[] {
+            200,
+            0,
+            0,
+            0});
+			this.numericUpDown_scanRate.Location = new System.Drawing.Point(461, 74);
+			this.numericUpDown_scanRate.Maximum = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            0});
+			this.numericUpDown_scanRate.Minimum = new decimal(new int[] {
+            200,
+            0,
+            0,
+            0});
+			this.numericUpDown_scanRate.Name = "numericUpDown_scanRate";
+			this.numericUpDown_scanRate.Size = new System.Drawing.Size(120, 20);
+			this.numericUpDown_scanRate.TabIndex = 12;
+			this.numericUpDown_scanRate.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+			this.numericUpDown_scanRate.Value = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
+			this.numericUpDown_scanRate.ValueChanged += new System.EventHandler(this.numericUpDown1_ValueChanged);
+			// 
+			// label1
+			// 
+			this.label1.AutoSize = true;
+			this.label1.Location = new System.Drawing.Point(374, 77);
+			this.label1.Name = "label1";
+			this.label1.Size = new System.Drawing.Size(80, 13);
+			this.label1.TabIndex = 13;
+			this.label1.Text = "Scan Rate (ms)";
+			// 
+			// label2
+			// 
+			this.label2.AutoSize = true;
+			this.label2.Location = new System.Drawing.Point(423, 43);
+			this.label2.Name = "label2";
+			this.label2.Size = new System.Drawing.Size(31, 13);
+			this.label2.TabIndex = 14;
+			this.label2.Text = "Ports";
+			// 
+			// button_scanPorts
+			// 
+			this.button_scanPorts.Location = new System.Drawing.Point(587, 39);
+			this.button_scanPorts.Name = "button_scanPorts";
+			this.button_scanPorts.Size = new System.Drawing.Size(40, 23);
+			this.button_scanPorts.TabIndex = 15;
+			this.button_scanPorts.Text = "Scan";
+			this.button_scanPorts.UseVisualStyleBackColor = true;
+			this.button_scanPorts.Click += new System.EventHandler(this.button_scanPorts_Click);
 			// 
 			// Form1
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(932, 650);
+			this.Controls.Add(this.button_scanPorts);
+			this.Controls.Add(this.label2);
+			this.Controls.Add(this.label1);
+			this.Controls.Add(this.numericUpDown_scanRate);
 			this.Controls.Add(this.richTextBox_messages);
 			this.Controls.Add(this.button_pauseResume);
 			this.Controls.Add(this.label_status);
@@ -287,6 +353,7 @@
 			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
 			this.menuStrip1.ResumeLayout(false);
 			this.menuStrip1.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.numericUpDown_scanRate)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -320,6 +387,10 @@
 		private System.Windows.Forms.ToolStripMenuItem stopToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem closeToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem pauseToolStripMenuItem;
+		private System.Windows.Forms.NumericUpDown numericUpDown_scanRate;
+		private System.Windows.Forms.Label label1;
+		private System.Windows.Forms.Label label2;
+		private System.Windows.Forms.Button button_scanPorts;
 	}
 }
 
